@@ -3,7 +3,7 @@ import * as Sharing from 'expo-sharing';
 import { Linking } from 'react-native';
 import Rust from '../modules/rust-logic';
 import type { Asset, Catalog, ReleaseInfo, Lesson, CatalogView, Playback, AudioPreview } from '../../../src/lib/types';
-export const APP_VERSION = '0.1.0';
+export const APP_VERSION = '0.1.1';
 export type NativeSaved = {asset: Asset; savedAt: string; uri: string};
 const call = async <T,>(request: object): Promise<T> => JSON.parse(await Rust.command(JSON.stringify(request)));
 export const domain = <T,>(request: object): T => JSON.parse(Rust.domain(JSON.stringify(request)));
