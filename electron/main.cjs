@@ -2,9 +2,10 @@ const { app, BrowserWindow, protocol, net, session, ipcMain, shell, dialog } = r
 const fs = require('node:fs/promises');
 const path = require('node:path');
 const { pathToFileURL } = require('node:url');
-const { createHash, randomUUID } = require('node:crypto');
+const { randomUUID } = require('node:crypto');
+const core = import('./logic/catalog_core.mjs').then(async rust => { rust.initSync({module:await fs.readFile(path.join(__dirname,'logic/catalog_core_bg.wasm'))});return rust; });
 protocol.registerSchemesAsPrivileged([{ scheme: 'app', privileges: { standard: true, secure: true, supportFetchAPI: true, corsEnabled: true } }]);
-const csp = "default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://niclan1.github.io; media-src 'self' blob:; frame-src 'self' blob:; connect-src 'self' https://niclan1.github.io; object-src 'none'";
+const csp = "default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self' 'unsafe-inline'; worker-src 'self' blob:; font-src 'self' data: blob:; img-src 'self' data: blob: https://niclan1.github.io; media-src 'self' blob:; frame-src 'self' blob:; connect-src 'self' https://niclan1.github.io; object-src 'none'";
 let mainWindow;
 if (process.env.VOLKSPELE_TEST_DATA) app.setPath('userData', process.env.VOLKSPELE_TEST_DATA);
 function hashPath(hash) {
@@ -13,7 +14,7 @@ function hashPath(hash) {
 }
 async function verified(hash) {
   const bytes = await fs.readFile(hashPath(hash));
-  if (createHash('sha256').update(bytes).digest('hex') !== hash) throw new Error('Saved content integrity check failed');
+  if ((await core).sha256(bytes) !== hash) throw new Error('Saved content integrity check failed');
   return bytes;
 }
 function trusted(event) { if (event.sender !== mainWindow?.webContents || !event.senderFrame?.url.startsWith('app://volkspele/')) throw new Error('Untrusted caller'); }
@@ -35,7 +36,7 @@ app.whenReady().then(async () => {
     const destination = hashPath(hash);
     if (!Array.isArray(bytes) || !bytes.length || bytes.length > 250_000_000 || bytes.some(b => !Number.isInteger(b) || b < 0 || b > 255)) throw new Error('Invalid file data');
     const data = Buffer.from(bytes);
-    if (createHash('sha256').update(data).digest('hex') !== hash) throw new Error('Content integrity check failed');
+    if ((await core).sha256(data) !== hash) throw new Error('Content integrity check failed');
     await fs.mkdir(path.dirname(destination), { recursive: true });
     try { await verified(hash); return; } catch { /* Repair a missing or corrupt file. */ }
     const temp = destination + '.' + randomUUID() + '.partial';
@@ -45,14 +46,14 @@ app.whenReady().then(async () => {
   handler('read_content', async ({ hash }) => Array.from(await verified(hash)));
   handler('delete_content', async ({ hash }) => fs.rm(hashPath(hash), { force: true }));
   handler('open_release', async ({ url }) => {
-    if (typeof url !== 'string' || !/^https:\/\/github\.com\/Niclan1\/automatic-waffle\/releases(?:\/|$)/.test(url)) throw new Error('Invalid release URL');
-    await shell.openExternal(url);
+    const safe=JSON.parse((await core).domain_command(JSON.stringify({op:'external',kind:'release',url})));
+    await shell.openExternal(safe);
   });
-  handler('open_official', async ({ url }) => { if (url !== 'https://volkspele.co.za/avvb/') throw new Error('Invalid official site URL'); await shell.openExternal(url); });
-  handler('export_content', async ({ hash, title, mime }) => {
-    const bytes = await verified(hash);
-    const ext = { 'video/mp4': 'mp4', 'video/webm': 'webm', 'audio/mpeg': 'mp3', 'audio/ogg': 'ogg', 'audio/wav': 'wav', 'application/pdf': 'pdf', 'text/plain': 'txt', 'image/jpeg': 'jpg', 'image/png': 'png', 'image/webp': 'webp' }[mime] ?? 'bin';
-    const { canceled, filePath } = await dialog.showSaveDialog(mainWindow, { defaultPath: `${String(title).replace(/[^\p{L}\p{N} _-]/gu, '')}.${ext}` });
+  handler('open_official', async ({ url }) => { const safe=JSON.parse((await core).domain_command(JSON.stringify({op:'external',kind:'official',url})));await shell.openExternal(safe); });
+  handler('export_content', async ({ asset }) => {
+    const name = JSON.parse((await core).domain_command(JSON.stringify({op:'exportName',asset})));
+    const bytes = await verified(asset.sha256);
+    const { canceled, filePath } = await dialog.showSaveDialog(mainWindow, { defaultPath: name });
     if (!canceled && filePath) await fs.writeFile(filePath, bytes);
   });
   mainWindow.removeMenu();

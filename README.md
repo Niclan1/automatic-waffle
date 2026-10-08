@@ -1,6 +1,6 @@
 # Volkspele
 
-React + TypeScript + shadcn/ui for the responsive website and Electron desktop apps. React Native (Expo) provides native Android/iOS screens. Shared Rust logic runs as WASM on web/desktop and through Kotlin JNI / Swift C bindings on mobile. Afrikaans navigation follows the supplied Volkspele brief.
+React + TypeScript + shadcn/ui for the responsive website and Electron desktop apps. React Native (Expo) provides native Android/iOS screens. Application logic, HTTP, downloads, update decisions, integrity, lesson preparation and audio decoding/preparation live in Rust. React renders the UI; thin storage and player adapters call platform APIs. Rust runs as WASM on web/desktop and through Kotlin JNI / Swift C bindings on mobile. Afrikaans navigation follows the supplied Volkspele brief.
 
 ## Development
 
@@ -48,6 +48,8 @@ npm run android
 ```
 
 For iOS, run `bash scripts/build-ios-rust.sh` on macOS before `npx expo prebuild --platform ios` and `npm run ios` in the mobile app folder. This builds a Rust XCFramework for device and simulator. The generated native projects are ignored; source bindings, config and signing patches are tracked.
+
+Sheet music renders inside the app beside song playback. Audio/video have practice speed and repeat controls, and step instructions/lyrics remain visible during playback.
 
 The React Native app stores downloaded media in its document directory and uses native audio/video players and the system share sheet. Rust hashes saved files as a stream, so native integrity checks do not load an entire video into JavaScript memory. The website uses IndexedDB; Electron uses app data files with a restricted IPC bridge.
 

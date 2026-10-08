@@ -1,6 +1,6 @@
 Volkspele brings the Afrikaans library to Windows, macOS, Linux and Android. Mobile screens use React Native; desktop installers use Electron; the responsive web app uses React and shadcn/ui. Shared Rust logic is compiled to native mobile libraries and web/desktop WASM.
 
-Browse songs and games, history, clothing, camp information, and AVVB contacts. Download published files for offline use. Content hashes detect changed files, and the app checks for new releases at launch.
+Read sheet music alongside song playback, adjust practice speed, repeat music/video, and learn dance steps. Browse songs and games, history, clothing, camp information, and AVVB contacts. Download published files for offline use. Content hashes detect changed files, and the app checks for new releases at launch.
 
 This first version establishes the app and content delivery system. The supplied brief names Aanstap Rooies and Blinkvosperd but does not include references A–L. Their media and informational source files are still awaiting publication.
 

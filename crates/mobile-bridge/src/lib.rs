@@ -1,4 +1,5 @@
 use base64::Engine;
+mod runtime;
 use std::ffi::{CStr, CString, c_char};
 fn envelope(result: Result<String, String>) -> String {
     match result { Ok(value) => serde_json::json!({"ok":true,"value":value}), Err(error) => serde_json::json!({"ok":false,"error":error}) }.to_string()
@@ -34,12 +35,16 @@ unsafe fn c_input<'a>(input: *const c_char) -> Result<&'a str, String> { if inpu
 #[no_mangle] pub unsafe extern "C" fn rust_fetch_catalog(input: *const c_char) -> *mut c_char { c_output(c_input(input).and_then(fetch)) }
 #[no_mangle] pub unsafe extern "C" fn rust_is_newer(current: *const c_char, latest: *const c_char) -> *mut c_char { c_output(c_input(current).and_then(|c| c_input(latest).and_then(|l|version(c,l)))) }
 #[no_mangle] pub unsafe extern "C" fn rust_free_string(output: *mut c_char) { if !output.is_null() { drop(CString::from_raw(output)); } }
+#[no_mangle] pub unsafe extern "C" fn rust_command(root: *const c_char, request: *const c_char) -> *mut c_char { c_output(c_input(root).and_then(|root|c_input(request).and_then(|request|runtime::command(root,request)))) }
+#[no_mangle] pub unsafe extern "C" fn rust_domain(request: *const c_char) -> *mut c_char { c_output(c_input(request).and_then(|r|serde_json::from_str(r).map_err(|e|e.to_string())).and_then(|r|catalog_core::domain::command(&r).map(|v|v.to_string()))) }
 #[cfg(target_os = "android")]
 mod android {
     use super::*;
     use jni::{JNIEnv, objects::{JObject,JString}, sys::jstring};
     fn input(env: &mut JNIEnv, s: &JString) -> Result<String,String> { env.get_string(s).map(|s|s.into()).map_err(|e|e.to_string()) }
     fn output(env: &mut JNIEnv, result: Result<String,String>) -> jstring { env.new_string(envelope(result)).map(|s|s.into_raw()).unwrap_or(std::ptr::null_mut()) }
+    #[no_mangle] pub extern "system" fn Java_expo_modules_rustlogic_NativeLogic_command(mut env: JNIEnv, _: JObject, root: JString, request: JString) -> jstring {let result=input(&mut env,&root).and_then(|root|input(&mut env,&request).and_then(|request|runtime::command(&root,&request)));output(&mut env,result)}
+    #[no_mangle] pub extern "system" fn Java_expo_modules_rustlogic_NativeLogic_domain(mut env: JNIEnv, _: JObject, request: JString) -> jstring {let result=input(&mut env,&request).and_then(|request|serde_json::from_str(&request).map_err(|e|e.to_string())).and_then(|request|catalog_core::domain::command(&request).map(|v|v.to_string()));output(&mut env,result)}
     #[no_mangle] pub extern "system" fn Java_expo_modules_rustlogic_NativeLogic_fetchCatalog(mut env: JNIEnv, _: JObject, s: JString) -> jstring { let result=input(&mut env,&s).and_then(|s|fetch(&s)); output(&mut env,result) }
     #[no_mangle] pub extern "system" fn Java_expo_modules_rustlogic_NativeLogic_parseCatalog(mut env: JNIEnv, _: JObject, s: JString) -> jstring { let result=input(&mut env,&s).and_then(|s|parse(&s)); output(&mut env,result) }
     #[no_mangle] pub extern "system" fn Java_expo_modules_rustlogic_NativeLogic_sha256Base64(mut env: JNIEnv, _: JObject, s: JString) -> jstring { let result=input(&mut env,&s).and_then(|s|sha(&s)); output(&mut env,result) }

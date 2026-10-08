@@ -2,6 +2,9 @@ import { cp, mkdir, readFile, writeFile, rm } from 'node:fs/promises';
 import path from 'node:path';
 const root = process.cwd();
 const stage = path.resolve(root, 'desktop-stage');
+await mkdir(path.join(root,'electron/logic'),{recursive:true});
+await cp(path.join(root,'crates/catalog-core/pkg/catalog_core.js'),path.join(root,'electron/logic/catalog_core.mjs'));
+await cp(path.join(root,'crates/catalog-core/pkg/catalog_core_bg.wasm'),path.join(root,'electron/logic/catalog_core_bg.wasm'));
 if (stage !== path.join(root, 'desktop-stage')) throw new Error('Invalid staging path');
 await mkdir(stage, { recursive: true });
 for (const directory of ['dist', 'electron']) {

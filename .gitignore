@@ -48,6 +48,7 @@ web_modules/
 *.tsbuildinfo
 release/
 desktop-stage/
+electron/logic/
 mobile-check/
 apps/mobile/ios-build/
 apps/mobile/.expo/

@@ -1,5 +1,6 @@
 import { test, expect } from '@playwright/test';
 import { createHash } from 'node:crypto';
+import { scoreFixture, audioFixture } from './fixtures.mjs';
 const bytes = Buffer.from('Geverifieerde toetsinhoud.');
 const hash = createHash('sha256').update(bytes).digest('hex');
 const asset = { id: 'dance-lyrics', title: 'Toets woorde', kind: 'lyrics', path: `content/${hash}`, sha256: hash, bytes: bytes.length, mime: 'text/plain', version: '1.0.0' };
@@ -57,4 +58,30 @@ test('mobile navigation, search, pending content and app update link', async ({ 
   await page.getByRole('button', { name: /My aflaaie/ }).first().click();
   await expect(page.getByRole('heading', { name: 'My aflaaie' })).toBeVisible();
   await expect(page.locator('body')).toHaveJSProperty('scrollWidth', 390);
+});
+test('sheet music renders offline alongside song playback and practice controls', async ({ page }) => {
+  const pdf = scoreFixture(), wav = audioFixture();
+  const make = (id: string, kind: string, body: Buffer, mime: string) => ({ id, title: id, kind, mime, bytes: body.length, sha256: createHash('sha256').update(body).digest('hex'), path: `content/${createHash('sha256').update(body).digest('hex')}`, version: '1.0.0' });
+  const sheet = make('Test bladmusiek', 'sheet', pdf, 'application/pdf'), song = make('Test musiek', 'audio', wav, 'audio/wav');
+  const fixture = catalog(); fixture.entries[0].assets = [sheet, song] as typeof fixture.entries[0]['assets'];
+  await page.route('https://niclan1.github.io/automatic-waffle/**', route => {
+    const url = route.request().url();
+    if (url.endsWith('catalog.json')) return route.fulfill({ json: fixture });
+    if (url.endsWith('app.json')) return route.fulfill({ json: { version: '0.1.0', url: 'https://github.com/Niclan1/automatic-waffle/releases/latest' } });
+    return route.fulfill({ body: url.endsWith(sheet.sha256) ? pdf : wav });
+  });
+  await page.goto('/'); await page.getByRole('button', { name: 'Ontdek die liedjies' }).click(); await page.getByRole('button', { name: /Aanstap Rooies/ }).click();
+  await page.locator('.asset-row').filter({ hasText: 'Test musiek' }).getByRole('button', { name: 'Laai af', exact: true }).click();
+  await expect(page.locator('audio')).toHaveJSProperty('paused', false);
+  await page.locator('.asset-row').filter({ hasText: 'Test bladmusiek' }).getByRole('button', { name: 'Laai af', exact: true }).click();
+  await expect(page.getByText('Bladsy 1 / 2')).toBeVisible();
+  await expect.poll(() => page.locator('canvas').evaluate(c => (c as HTMLCanvasElement).width)).toBeGreaterThan(0);
+  await page.getByRole('button', { name: 'Volgende bladsy' }).click(); await expect(page.getByText('Bladsy 2 / 2')).toBeVisible();
+  await page.getByLabel('Liedjie spoed').selectOption('0.5'); await expect(page.locator('audio')).toHaveJSProperty('playbackRate', .5);
+  await page.getByLabel('Herhaal', { exact: true }).check(); await expect(page.locator('audio')).toHaveJSProperty('loop', true);
+  await page.getByLabel('Vergroot bladmusiek').selectOption('2'); await expect(page.locator('canvas')).toHaveCSS('width', /\d+px/);
+  await page.unroute('https://niclan1.github.io/automatic-waffle/**'); await page.route('https://niclan1.github.io/automatic-waffle/**', route => route.abort());
+  await page.reload(); await page.getByRole('button', { name: 'Ontdek die liedjies' }).click(); await page.getByRole('button', { name: /Aanstap Rooies/ }).click();
+  await expect(page.getByText('Bladsy 1 / 2')).toBeVisible(); await expect(page.locator('audio')).toHaveJSProperty('paused', false);
+  await page.getByRole('button',{name:/My aflaaie/}).first().click(); await page.locator('.asset-row').filter({hasText:'Test bladmusiek'}).getByRole('button',{name:'Maak oop'}).click(); await expect(page.locator('dialog').getByText('Bladsy 1 / 2')).toBeVisible();
 });

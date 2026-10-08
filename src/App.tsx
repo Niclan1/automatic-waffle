@@ -1,7 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
 import { ArrowDownToLine, ArrowRight, BookOpen, Check, CircleHelp, Download, Flower2, FolderHeart, Home, History, LoaderCircle, Menu, Music2, Play, RefreshCw, Search, Shirt, Tent, Trash2, Users, WifiOff, X } from 'lucide-react';
+import { Practice, PracticeMedia } from '@/components/Practice';
+import { SheetMusic } from '@/components/SheetMusic';
 import { Button } from '@/components/ui/button';
-import { API_BASE, APP_VERSION, checkRelease, download, exportNative, fileBlob, loadCatalog, openOfficial, openRelease, removeFile, savedFiles } from '@/lib/library';
+import { API_BASE, APP_VERSION, checkRelease, catalogView, assetState, exportName, previewAsset, download, exportNative, fileBlob, filePreview, loadCatalog, openOfficial, openRelease, removeFile, savedFiles } from '@/lib/library';
 import type { Asset, Catalog, Entry, ReleaseInfo, Saved } from '@/lib/types';
 const sections = [
   { id: 'home', label: 'Tuisblad', icon: Home },
@@ -11,7 +13,7 @@ const sections = [
   { id: 'camp', label: 'Laer inligting', icon: Tent },
   { id: 'contact', label: 'AVVB kontak', icon: Users },
 ];
-const kindLabels: Record<string, string> = { video: 'Video', audio: 'Liedjie musiek', lyrics: 'Liedjie woorde', steps: 'Passies & grepe', document: 'Inligting', image: 'Foto' };
+const kindLabels: Record<string, string> = { video: 'Video', audio: 'Liedjie musiek', lyrics: 'Liedjie woorde', steps: 'Passies & grepe', document: 'Inligting', image: 'Foto', sheet: 'Bladmusiek' };
 const formatBytes = (bytes: number) => bytes >= 1_000_000 ? `${(bytes / 1_000_000).toFixed(1)} MB` : `${Math.ceil(bytes / 1000)} KB`;
 function CircleArt() { return <div className="circle-art" aria-hidden="true"><div className="orbit orbit-outer"/><div className="orbit orbit-inner"/><Flower2 className="art-flower"/>{Array.from({ length: 8 }, (_, i) => <div className="dancer" style={{ transform: `rotate(${i * 45}deg) translateY(-108px)` }} key={i}><i/><b/></div>)}<span className="art-label">SAAM IN DIE KRING</span></div>; }
 export default function App() {
@@ -27,8 +29,9 @@ export default function App() {
   const [release, setRelease] = useState<ReleaseInfo | null>(null);
   const [progress, setProgress] = useState<Record<string, number>>({});
   const controllers = useRef(new Map<string, AbortController>());
-  const [viewer, setViewer] = useState<{ asset: Asset; url: string; text?: string }>();
+  const [viewer, setViewer] = useState<{ asset: Asset; url: string; text?: string; bytes?:Uint8Array }>();
   const [photoError, setPhotoError] = useState(false);
+  const [photoUrl,setPhotoUrl]=useState<string>();
   const dialogRef = useRef<HTMLDialogElement>(null);
   const sync = async () => {
     setBusy(true);
@@ -50,8 +53,8 @@ export default function App() {
   };
   const view = async (record: Saved) => {
     try {
-      const blob = await fileBlob(record);
-      setViewer({ asset: record.asset, url: URL.createObjectURL(blob), text: ['lyrics', 'steps', 'document'].includes(record.asset.kind) && record.asset.mime.startsWith('text/plain') ? await blob.text() : undefined });
+      const {blob,text,bytes}=await filePreview(record);
+      setViewer({asset:record.asset,url:URL.createObjectURL(blob),text,bytes});
     } catch (e) { setNotice(String(e)); }
   };
   const remove = async (record: Saved) => { try { await removeFile(record.asset.id); await refreshFiles(); setNotice('Lêer verwyder.'); } catch { setNotice('Lêer kon nie verwyder word nie.'); } };
@@ -60,19 +63,17 @@ export default function App() {
       if (await exportNative(record)) return;
       const blob = await fileBlob(record);
       const url = URL.createObjectURL(blob); const a = document.createElement('a');
-      a.href = url; const ext: Record<string, string> = { 'video/mp4': '.mp4', 'audio/mpeg': '.mp3', 'audio/ogg': '.ogg', 'application/pdf': '.pdf', 'text/plain': '.txt', 'video/webm': '.webm', 'audio/wav': '.wav', 'image/jpeg': '.jpg', 'image/png': '.png', 'image/webp': '.webp' };
-      a.download = record.asset.title.replace(/[^\p{L}\p{N} _-]/gu, '') + (ext[record.asset.mime] ?? '.bin'); a.click(); setTimeout(() => URL.revokeObjectURL(url), 10000);
+      a.href=url; a.download=exportName(record.asset); a.click(); setTimeout(() => URL.revokeObjectURL(url), 10000);
     } catch (e) { setNotice(String(e)); }
   };
-  const currentAssets = catalog?.entries.flatMap(e => e.assets) ?? [];
-  const outdated = files.filter(f => currentAssets.some(a => a.id === f.asset.id && a.sha256 !== f.asset.sha256));
-  const entries = catalog?.entries.filter(e => e.category === section && `${e.title} ${e.description}`.toLowerCase().includes(query.toLowerCase())) ?? [];
+  const prepared = catalog ? catalogView(catalog,section,query,files) : {assets:[],outdated:[],entries:[],totalBytes:0};
+  const {assets:currentAssets,outdated,entries} = prepared;
   const active = selected && catalog?.entries.find(e => e.id === selected.id);
   const heroPhoto = catalog?.entries.find(e => e.id === 'welkom')?.assets.find(a => a.kind === 'image');
+  useEffect(() => {const controller=new AbortController();let url:string|undefined;setPhotoUrl(undefined);setPhotoError(false);if(heroPhoto)void previewAsset(heroPhoto,controller.signal).then(blob=>{if(!controller.signal.aborted){url=URL.createObjectURL(blob);setPhotoUrl(url);}}).catch(()=>{if(!controller.signal.aborted)setPhotoError(true);});return()=>{controller.abort();if(url)URL.revokeObjectURL(url);};},[heroPhoto?.sha256]);
   const navigate = (id: string) => { setSection(id); setSelected(undefined); setQuery(''); setMenu(false); };
   const assetRow = (asset: Asset, savedOnly = false) => {
-    const record = files.find(f => f.asset.id === asset.id);
-    const updated = record && record.asset.sha256 !== asset.sha256;
+    const {record,updated}=assetState(asset,files);
     const downloading = progress[asset.id] !== undefined;
     return <div className="asset-row" key={asset.id}>
       <span className="asset-icon">{asset.kind === 'video' ? <Play size={19}/> : asset.kind === 'audio' ? <Music2 size={19}/> : <BookOpen size={19}/>}</span>
@@ -103,7 +104,7 @@ export default function App() {
         {offline && <div className="offline-banner"><WifiOff size={16}/>Vanlyn · Jou gestoorde lêers is steeds beskikbaar.</div>}
         {section === 'home' && <>
           <section className="hero welcome-hero">
-            {heroPhoto && !photoError && <img className="welcome-photo" src={new URL(heroPhoto.path, API_BASE).href} alt="Volkspelers wat saam in die kring speel" onError={() => setPhotoError(true)}/>}
+            {photoUrl && !photoError && <img className="welcome-photo" src={photoUrl} alt="Volkspelers wat saam in die kring speel" onError={() => setPhotoError(true)}/>}
             <div className="welcome-shade"/>
             <div className="hero-copy"><span className="eyebrow">DIE AFRIKAANSE VOLKSANG- EN VOLKSPELEBEWEGING</span><h1>Welkom by Volkspele.<br/>Kom speel saam.</h1><p>Saam sing. Saam speel. Saam onthou. Ontdek die liedjies, passies en tradisies wat ons in die kring bymekaarbring.</p><div className="welcome-actions"><Button onClick={() => navigate('dance')}>Ontdek die liedjies <ArrowRight size={16}/></Button><Button variant="outline" onClick={() => void openRelease('https://github.com/Niclan1/automatic-waffle/releases/latest')}>Kry die app <Download size={16}/></Button></div></div>
             {!heroPhoto || photoError ? <CircleArt/> : null}
@@ -117,15 +118,15 @@ export default function App() {
         {section === 'home' ? null : active ? <>
           <button className="back-link" onClick={() => setSelected(undefined)}>← Terug na die biblioteek</button>
           <div className="page-heading"><div><span className="eyebrow">LIEDJIES & SPELETJIES · {String(active.number ?? '').padStart(2, '0')}</span><h1>{active.title}</h1><p>{active.description}</p></div></div>
-          <div className="detail-panel"><h2>Leer, luister en speel</h2><p>Laai elke lêer af om dit vanlyn te gebruik.</p>{active.assets.length ? active.assets.map(a => assetRow(a)) : <div className="empty-state"><CircleHelp size={30}/><h3>Inhoud word voorberei</h3><p>Video, passies & grepe, liedjie woorde en musiek verskyn hier sodra die bronlêers gepubliseer is.</p></div>}</div>
+          <Practice key={active.id} entry={active} files={files} onError={setNotice}/><div className="detail-panel"><h2>Aflaaie vir hierdie dans</h2><p>Laai elke lêer af om dit vanlyn te gebruik.</p>{active.assets.length ? active.assets.map(a => assetRow(a)) : <div className="empty-state"><CircleHelp size={30}/><h3>Inhoud word voorberei</h3><p>Bladmusiek, video, passies & grepe, liedjie woorde en musiek verskyn hier sodra die bronlêers gepubliseer is.</p></div>}</div>
         </> : section === 'saved' ? <>
-          <div className="page-heading"><div><span className="eyebrow">JOU VERSAMELING</span><h1>My aflaaie</h1><p>Jou tradisies, saam met jou. Gereed vir vanlyn gebruik.</p></div><span className="pill">{formatBytes(files.reduce((sum, f) => sum + f.asset.bytes, 0))} gestoor</span></div>
+          <div className="page-heading"><div><span className="eyebrow">JOU VERSAMELING</span><h1>My aflaaie</h1><p>Jou tradisies, saam met jou. Gereed vir vanlyn gebruik.</p></div><span className="pill">{formatBytes(prepared.totalBytes)} gestoor</span></div>
           {outdated.length > 0 && <div className="offline-banner"><RefreshCw size={16}/>{outdated.length} lêeropdatering(s) beskikbaar. Jou huidige aflaaie bly bruikbaar.</div>}
           <div className="detail-panel">{files.length ? files.map(f => assetRow(currentAssets.find(a => a.id === f.asset.id) ?? f.asset, false)) : <div className="empty-state"><FolderHeart size={36}/><h3>Maak plek vir jou gunstelinge</h3><p>Aflaaie verskyn hier. Begin by ’n liedjie en stoor die lêers wat jy wil saamneem.</p><Button onClick={() => navigate('dance')}>Ontdek die biblioteek <ArrowRight size={16}/></Button></div>}</div>
         </> : <>
           <div className="section-heading"><div><span className="eyebrow">{section === 'dance' ? 'VIND JOU RITME' : 'ONS TRADISIE'}</span><h2>{sections.find(s => s.id === section)?.label}</h2><p>{section === 'dance' ? 'Kies ’n liedjie. Leer die passies. Speel saam.' : 'Ontdek meer oor die mense en tradisies van Volkspele.'}</p></div><label className="search-box"><Search size={18}/><input aria-label="Soek in biblioteek" placeholder="Soek in die biblioteek…" value={query} onChange={e => setQuery(e.target.value)}/>{query && <button aria-label="Maak soektog skoon" onClick={() => setQuery('')}><X size={15}/></button>}</label></div>
           <div className="filter-row"><span className="filter-chip">{section === 'dance' ? 'Alle liedjies' : 'Alle inligting'}</span><span>{entries.length} {section === 'dance' ? 'liedjies' : 'inskrywings'}</span><span className="filter-right">{catalog ? `Biblioteek v${catalog.version}` : busy ? 'Besig om te laai…' : 'Biblioteek nie beskikbaar nie'}</span></div>
-          <div className="entry-grid">{entries.map((entry, index) => section === 'dance' ? <button className="dance-card" key={entry.id} onClick={() => setSelected(entry)}><div className={`card-art card-art-${index % 2}`}><div className="card-rings"/><Music2 className="card-music" size={48} strokeWidth={1.3}/><span className="card-number">{String(entry.number ?? index + 1).padStart(2, '0')}</span><span className="card-art-word">{index % 2 ? 'SPEEL SAAM' : 'HOU DIE RITME'}</span></div><div className="card-body"><span className="card-category">LIEDJIE & SPELETJIE</span><h3>{entry.title}<ArrowRight size={20}/></h3><p>{entry.description}</p><div className="card-meta"><span><Play size={14}/>Video</span><span><BookOpen size={14}/>Passies</span><span><Music2 size={14}/>Musiek</span></div><div className="card-state">{entry.assets.length ? <><span className="status-dot"/>{entry.assets.length} lêers beskikbaar</> : <><span className="pending-dot"/>Inhoud word voorberei</>}</div></div></button> : <article className="info-card" key={entry.id}><BookOpen size={24}/><h3>{entry.title}</h3><p>{entry.description}</p>{entry.assets.length ? entry.assets.map(a => assetRow(a)) : <span className="pill">Inhoud word voorberei</span>}</article>)}</div>
+          <div className="entry-grid">{entries.map((entry, index) => section === 'dance' ? <button className="dance-card" key={entry.id} onClick={() => setSelected(entry)}><div className={`card-art card-art-${index % 2}`}><div className="card-rings"/><Music2 className="card-music" size={48} strokeWidth={1.3}/><span className="card-number">{String(entry.number ?? index + 1).padStart(2, '0')}</span><span className="card-art-word">{index % 2 ? 'SPEEL SAAM' : 'HOU DIE RITME'}</span></div><div className="card-body"><span className="card-category">LIEDJIE & SPELETJIE</span><h3>{entry.title}<ArrowRight size={20}/></h3><p>{entry.description}</p><div className="card-meta"><span><BookOpen size={14}/>Bladmusiek</span><span><Play size={14}/>Video</span><span><BookOpen size={14}/>Passies</span><span><Music2 size={14}/>Musiek</span></div><div className="card-state">{entry.assets.length ? <><span className="status-dot"/>{entry.assets.length} lêers beskikbaar</> : <><span className="pending-dot"/>Inhoud word voorberei</>}</div></div></button> : <article className="info-card" key={entry.id}><BookOpen size={24}/><h3>{entry.title}</h3><p>{entry.description}</p>{entry.assets.length ? entry.assets.map(a => assetRow(a)) : <span className="pill">Inhoud word voorberei</span>}</article>)}</div>
           {!entries.length && <div className="empty-state">{busy ? <LoaderCircle className="spin" size={28}/> : <Search size={28}/>}<h3>{busy ? 'Biblioteek word gelaai' : query ? 'Geen resultate nie' : 'Biblioteek nie beskikbaar nie'}</h3><p>{query ? 'Probeer ’n ander liedjie se naam.' : 'Kyk jou verbinding na en probeer weer.'}</p>{!busy && !query && <Button onClick={() => void sync()}>Probeer weer</Button>}</div>}
           {section === 'dance' && <div className="library-note"><Check size={18}/><p><strong>Jou biblioteek groei saam met jou.</strong> Nuwe inhoud word apart afgelaai — sonder om die app weer te installeer.</p></div>}
         </>}
@@ -133,6 +134,6 @@ export default function App() {
       </div>
     </main>
     {notice && <div className="toast" role="status"><span>{notice}</span><button aria-label="Sluit kennisgewing" onClick={() => setNotice('')}><X size={18}/></button></div>}
-    <dialog ref={dialogRef} className="viewer" onClose={() => setViewer(undefined)} onCancel={() => setViewer(undefined)}>{viewer && <><div className="viewer-header"><h2>{viewer.asset.title}</h2><Button variant="ghost" size="icon" aria-label="Sluit lêer" onClick={() => dialogRef.current?.close()}><X/></Button></div>{viewer.asset.kind === 'video' ? <video controls src={viewer.url}/> : viewer.asset.kind === 'audio' ? <audio controls src={viewer.url}/> : viewer.asset.kind === 'image' ? <img src={viewer.url} alt={viewer.asset.title} style={{maxWidth:'100%'}}/> : viewer.text !== undefined ? <pre>{viewer.text}</pre> : viewer.asset.mime === 'application/pdf' ? <><iframe title={viewer.asset.title} src={viewer.url}/><p>As jou toestel nie die dokument vertoon nie, gebruik die uitvoerknoppie by My aflaaie.</p></> : <p>Gebruik die uitvoerknoppie by My aflaaie om hierdie lêer te stoor en oop te maak.</p>}</>}</dialog>
+    <dialog ref={dialogRef} className="viewer" onClose={() => setViewer(undefined)} onCancel={() => setViewer(undefined)}>{viewer && <><div className="viewer-header"><h2>{viewer.asset.title}</h2><Button variant="ghost" size="icon" aria-label="Sluit lêer" onClick={() => dialogRef.current?.close()}><X/></Button></div>{viewer.asset.kind === 'video' ? <PracticeMedia url={viewer.url} kind="video"/> : viewer.asset.kind === 'audio' ? <PracticeMedia url={viewer.url} kind="audio"/> : viewer.asset.kind === 'image' ? <img src={viewer.url} alt={viewer.asset.title} style={{maxWidth:'100%'}}/> : viewer.text !== undefined ? <pre>{viewer.text}</pre> : viewer.asset.mime === 'application/pdf' ? <><SheetMusic data={viewer.bytes} url={viewer.url} title={viewer.asset.title}/></> : <p>Gebruik die uitvoerknoppie by My aflaaie om hierdie lêer te stoor en oop te maak.</p>}</>}</dialog>
   </div>;
 }

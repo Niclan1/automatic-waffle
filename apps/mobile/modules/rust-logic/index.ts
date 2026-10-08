@@ -1,3 +1,2 @@
 import { requireNativeModule } from 'expo-modules-core';
-const Native = requireNativeModule<{ fetchCatalog(url: string): Promise<string>; parseCatalog(text: string): string; sha256Base64(text: string): Promise<string>; sha256File(uri: string): Promise<string>; isNewer(current: string, latest: string): boolean }>('RustLogic');
-export default Native;
+export default requireNativeModule<{ command(request: string): Promise<string>; domain(request: string): string; progress(id: string): number; cancelDownload(id: string): string; renderPdfPage(uri: string, page: number, width: number): Promise<{uri: string; width: number; height: number; pages: number}> }>('RustLogic');

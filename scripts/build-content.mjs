@@ -14,9 +14,9 @@ export async function buildContent(root = process.cwd(), output = path.join(root
     for (const asset of entry.assets) {
       if (!asset.id || assetIds.has(asset.id)) throw new Error('Duplicate/empty asset ID');
       assetIds.add(asset.id);
-      if (!['video', 'audio', 'lyrics', 'steps', 'document', 'image'].includes(asset.kind)) throw new Error('Unknown asset kind');
+      if (!['video', 'audio', 'lyrics', 'steps', 'document', 'image', 'sheet'].includes(asset.kind)) throw new Error('Unknown asset kind');
       if (!/^\d+\.\d+\.\d+$/.test(asset.version)) throw new Error('Invalid asset version');
-      const allowedMime = { video: ['video/mp4', 'video/webm'], audio: ['audio/mpeg', 'audio/ogg', 'audio/wav'], lyrics: ['text/plain', 'application/pdf'], steps: ['text/plain', 'application/pdf'], document: ['text/plain', 'application/pdf'], image: ['image/jpeg', 'image/png', 'image/webp'] };
+      const allowedMime = { video: ['video/mp4', 'video/webm'], audio: ['audio/mpeg', 'audio/ogg', 'audio/wav'], lyrics: ['text/plain', 'application/pdf'], steps: ['text/plain', 'application/pdf'], document: ['text/plain', 'application/pdf'], image: ['image/jpeg', 'image/png', 'image/webp'], sheet: ['application/pdf', 'image/jpeg', 'image/png', 'image/webp'] };
       if (!allowedMime[asset.kind].includes(asset.mime)) throw new Error('Unsupported MIME type');
       if (typeof asset.file !== 'string' || path.isAbsolute(asset.file)) throw new Error('Invalid source file');
       const file = await realpath(path.resolve(contentRoot, asset.file));
