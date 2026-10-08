@@ -1,0 +1,29 @@
+name: Checks
+on:
+  push:
+    branches: [main]
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  checks:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup
+      - run: cargo test --locked
+      - run: npm test
+      - run: npm run check:mobile
+      - run: npm run pages
+        env:
+          PAGES_BUILD: 'true'
+      - run: npx playwright install --with-deps chromium
+      - run: npx playwright test
+      - name: Validate React Native bundle
+        working-directory: apps/mobile
+        run: npx expo export --platform android --output-dir ../../mobile-check
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: browser-test-results
+          path: test-results/

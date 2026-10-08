@@ -1,0 +1,9 @@
+{
+  "expo": {
+    "name": "Volkspele", "slug": "volkspele", "version": "0.1.0", "orientation": "default", "userInterfaceStyle": "light",
+    "icon": "./assets/icon.png", "splash": { "backgroundColor": "#174e43", "image": "./assets/icon.png", "resizeMode": "contain" },
+    "android": { "package": "za.co.niclan.volkspele", "versionCode": 1, "permissions": [], "blockedPermissions": ["android.permission.RECORD_AUDIO"], "adaptiveIcon": { "foregroundImage": "./assets/icon.png", "backgroundColor": "#174e43" } },
+    "ios": { "bundleIdentifier": "za.co.niclan.volkspele", "buildNumber": "1", "supportsTablet": true },
+    "plugins": ["expo-file-system", "expo-video", ["expo-audio", { "microphonePermission": false }]]
+  }
+}

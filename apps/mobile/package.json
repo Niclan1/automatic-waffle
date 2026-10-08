@@ -1,0 +1,31 @@
+{
+  "name": "@volkspele/mobile",
+  "private": true,
+  "version": "0.1.0",
+  "main": "index.ts",
+  "scripts": {
+    "start": "expo start --dev-client",
+    "android": "expo run:android",
+    "ios": "expo run:ios",
+    "check": "tsc --noEmit",
+    "prebuild:android": "expo prebuild --platform android --no-install"
+  },
+  "dependencies": {
+    "@react-native-async-storage/async-storage": "2.2.0",
+    "expo": "~57.0.27",
+    "expo-audio": "~57.0.5",
+    "expo-file-system": "~57.0.7",
+    "expo-modules-core": "~57.0.21",
+    "expo-sharing": "~57.0.22",
+    "expo-status-bar": "~57.0.1",
+    "expo-system-ui": "~57.0.4",
+    "expo-video": "~57.0.5",
+    "react": "19.2.3",
+    "react-native": "0.86.3",
+    "react-native-safe-area-context": "~5.7.0"
+  },
+  "devDependencies": {
+    "@types/react": "~19.2.4",
+    "typescript": "~6.0.3"
+  }
+}

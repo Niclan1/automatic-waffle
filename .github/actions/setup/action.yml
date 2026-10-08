@@ -1,0 +1,19 @@
+name: Build frontend and Rust WASM
+description: Install locked frontend dependencies and compile shared Rust logic
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-node@v4
+      with:
+        node-version: '22'
+        cache: npm
+    - uses: dtolnay/rust-toolchain@stable
+      with:
+        targets: wasm32-unknown-unknown
+    - uses: Swatinem/rust-cache@v2
+    - shell: bash
+      run: npm ci
+    - shell: bash
+      run: cargo install wasm-pack --version 0.15.0 --locked
+    - shell: bash
+      run: npm run wasm

@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "version": "0.1.0",
+  "entries": [
+    { "id": "welkom", "title": "Welkom by Volkspele", "category": "home", "description": "Saam sing, saam speel, saam onthou.", "assets": [{ "id": "welcome-photo", "title": "Volkspele saamtrek — Volkspele webblad", "kind": "image", "file": "branding/welcome.jpg", "mime": "image/jpeg", "version": "1.0.0" }] },
+    { "id": "aanstap-rooies", "title": "Aanstap Rooies", "number": 1, "category": "dance", "description": "Ontdek die liedjie, leer die passies en speel saam in die kring.", "assets": [] },
+    { "id": "blinkvosperd", "title": "Blinkvosperd", "number": 6, "category": "dance", "description": "Leer die passies en grepe, en vind die woorde en musiek op een plek.", "assets": [] },
+    { "id": "geskiedenis", "title": "Die geskiedenis van Volkspele", "category": "history", "description": "Die geskiedenis word hier gepubliseer sodra verwysing A beskikbaar is.", "assets": [] },
+    { "id": "kleredrag", "title": "Ons kleredrag", "category": "clothing", "description": "Inligting oor tradisionele kleredrag word hier gepubliseer sodra verwysing B beskikbaar is.", "assets": [] },
+    { "id": "laer", "title": "Laer inligting", "category": "camp", "description": "Laer inligting word hier gepubliseer sodra verwysing C beskikbaar is.", "assets": [] },
+    { "id": "avvb", "title": "AVVB kontak inligting", "category": "contact", "description": "Goedgekeurde kontakbesonderhede word hier gepubliseer sodra verwysing D beskikbaar is.", "assets": [] }
+  ]
+}

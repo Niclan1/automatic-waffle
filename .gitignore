@@ -46,6 +46,15 @@ web_modules/
 
 # TypeScript cache
 *.tsbuildinfo
+release/
+desktop-stage/
+mobile-check/
+apps/mobile/ios-build/
+apps/mobile/.expo/
+apps/mobile/android/
+apps/mobile/ios/
+apps/mobile/modules/rust-logic/android/src/main/jniLibs/
+apps/mobile/modules/rust-logic/ios/VolkspeleLogic.xcframework/
 
 # Optional npm cache directory
 .npm
@@ -141,3 +150,18 @@ dist
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 .vite/
+
+# Volkspele build outputs
+node_modules/
+dist/
+target/
+crates/catalog-core/pkg/
+src-tauri/gen/
+.env*
+!.env.example
+*.jks
+*.keystore
+keystore.properties
+playwright-report/
+test-results/
+*.tsbuildinfo

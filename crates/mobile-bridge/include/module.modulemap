@@ -1,0 +1,4 @@
+module VolkspeleLogic {
+  header "volkspele_logic.h"
+  export *
+}

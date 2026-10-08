@@ -1,0 +1,50 @@
+name: GitHub Pages
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+  workflow_run:
+    workflows: [Release apps]
+    types: [completed]
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+concurrency:
+  group: pages
+  cancel-in-progress: false
+jobs:
+  build:
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: ./.github/actions/setup
+      - run: npm test
+      - name: Use latest published app version
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            try {
+              const {data} = await github.rest.repos.getLatestRelease(context.repo);
+              fs.writeFileSync('content/app.json', JSON.stringify({ version: data.tag_name.replace(/^v/, ''), url: data.html_url }, null, 2));
+            } catch (error) { if (error.status !== 404) throw error; }
+      - run: npm run pages
+        env:
+          PAGES_BUILD: 'true'
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+  deploy:
+    needs: build
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/deploy-pages@v4
+        id: deployment

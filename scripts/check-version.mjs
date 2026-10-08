@@ -1,0 +1,10 @@
+import { readFile } from 'node:fs/promises';
+const pkg = JSON.parse(await readFile('package.json', 'utf8'));
+const mobile = JSON.parse(await readFile('apps/mobile/package.json', 'utf8'));
+const expo = JSON.parse(await readFile('apps/mobile/app.json', 'utf8')).expo;
+const ui = await readFile('src/lib/library.ts', 'utf8');
+const native = await readFile('apps/mobile/src/library.ts', 'utf8');
+if (!/^\d+\.\d+\.\d+$/.test(pkg.version) || pkg.version !== mobile.version || pkg.version !== expo.version || !ui.includes(`APP_VERSION = '${pkg.version}'`) || !native.includes(`APP_VERSION = '${pkg.version}'`)) throw new Error('App versions must match in root/mobile package.json, mobile app.json and both library modules');
+const tag = `v${pkg.version}`;
+if (process.env.GITHUB_REF_TYPE === 'tag' && process.env.GITHUB_REF_NAME !== tag) throw new Error('Tag does not match app version');
+console.log(tag);

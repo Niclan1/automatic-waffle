@@ -1,0 +1,36 @@
+name: iOS simulator
+on:
+  workflow_dispatch:
+  workflow_call:
+    inputs:
+      release_tag:
+        type: string
+        required: false
+        default: ''
+permissions:
+  contents: write
+jobs:
+  simulator:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup
+      - run: bash scripts/build-ios-rust.sh
+      - name: Generate React Native iOS project
+        working-directory: apps/mobile
+        run: npx expo prebuild --platform ios
+      - name: Build unsigned simulator application
+        working-directory: apps/mobile
+        run: xcodebuild -workspace ios/Volkspele.xcworkspace -scheme Volkspele -configuration Release -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' -derivedDataPath ios-build CODE_SIGNING_ALLOWED=NO
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ios-simulator-app
+          path: apps/mobile/ios-build/Build/Products/Release-iphonesimulator/Volkspele.app
+      - name: Attach simulator build to release
+        if: inputs.release_tag != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ inputs.release_tag }}
+        run: |
+          ditto -c -k --sequesterRsrc --keepParent apps/mobile/ios-build/Build/Products/Release-iphonesimulator/Volkspele.app "Volkspele-${TAG}-ios-simulator.zip"
+          gh release upload "$TAG" "Volkspele-${TAG}-ios-simulator.zip" --clobber

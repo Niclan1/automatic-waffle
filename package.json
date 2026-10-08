@@ -1,0 +1,36 @@
+{
+  "name": "volkspele", "private": true, "version": "0.1.0", "type": "module", "main": "electron/main.cjs",
+  "workspaces": ["apps/mobile"],
+  "scripts": {
+    "dev": "vite --host 127.0.0.1",
+    "wasm": "wasm-pack build crates/catalog-core --target web --release",
+    "build": "tsc -b && vite build",
+    "build:all": "npm run wasm && npm run build",
+    "check": "tsc -b",
+    "test": "node --test tests/*.test.mjs",
+    "content": "node scripts/build-content.mjs",
+    "pages": "npm run build && npm run content",
+    "desktop": "npm run build && electron .",
+    "desktop:package": "npm run build && node scripts/prepare-desktop.mjs && electron-builder --publish never",
+    "mobile": "npm run start --workspace apps/mobile",
+    "check:mobile": "npm run check --workspace apps/mobile"
+  },
+  "dependencies": {
+    "@radix-ui/react-slot": "^1.2.0", "class-variance-authority": "^0.7.1", "clsx": "^2.1.1",
+    "idb": "^8.0.0", "lucide-react": "^0.468.0", "react": "19.2.3", "react-dom": "19.2.3", "tailwind-merge": "^3.0.0"
+  },
+  "devDependencies": {
+    "electron": "^44.7.0", "electron-builder": "^26.15.3", "@types/node": "^22.0.0", "@types/react": "~19.2.4", "@types/react-dom": "~19.2.3",
+    "@vitejs/plugin-react": "^4.3.4", "@tailwindcss/vite": "^4.0.0", "tailwindcss": "^4.0.0", "typescript": "~6.0.3", "vite": "^6.0.0", "@playwright/test": "^1.51.0"
+  },
+  "build": {
+    "appId": "za.co.niclan.volkspele", "productName": "Volkspele",
+    "artifactName": "Volkspele-${version}-${os}-${arch}.${ext}",
+    "files": ["dist/**/*", "electron/**/*", "package.json", "build/icon.png"],
+    "directories": { "app": "desktop-stage", "output": "release", "buildResources": "build" },
+    "win": { "target": ["nsis"], "icon": "build/icon.ico" },
+    "nsis": { "oneClick": false, "allowToChangeInstallationDirectory": true },
+    "mac": { "target": ["dmg", "zip"], "icon": "build/icon.icns", "category": "public.app-category.education", "identity": null },
+    "linux": { "target": ["AppImage", "deb"], "icon": "build/icon.png", "category": "Education", "maintainer": "Niclan1" }
+  }
+}

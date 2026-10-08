@@ -1,0 +1,3 @@
+[workspace]
+members = ["crates/catalog-core", "crates/mobile-bridge"]
+resolver = "2"

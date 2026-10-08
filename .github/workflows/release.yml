@@ -1,0 +1,156 @@
+name: Release apps
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  prepare:
+    runs-on: ubuntu-24.04
+    outputs:
+      tag: ${{ steps.version.outputs.tag }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - id: version
+        name: Validate app versions
+        shell: bash
+        run: |
+          TAG=$(node scripts/check-version.mjs)
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+      - name: Prepare draft release
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ steps.version.outputs.tag }}
+        run: |
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            DRAFT=$(gh release view "$TAG" --json isDraft --jq .isDraft)
+            test "$DRAFT" = true || { echo 'This version is already published. Bump the version.'; exit 1; }
+          else
+            gh release create "$TAG" --target "$GITHUB_SHA" --draft --title "Volkspele $TAG" --notes-file docs/RELEASE-NOTES.md
+          fi
+  desktop:
+    needs: prepare
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            args: --win --x64
+            artifact: windows-x64
+          - os: windows-latest
+            args: --win --arm64
+            artifact: windows-arm64
+          - os: macos-latest
+            args: --mac --arm64
+            artifact: macos-arm64
+          - os: macos-latest
+            args: --mac --x64
+            artifact: macos-x64
+          - os: ubuntu-24.04
+            args: --linux --x64
+            artifact: linux-x64
+          - os: ubuntu-24.04-arm
+            args: --linux --arm64
+            artifact: linux-arm64
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup
+      - name: Package Electron app
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: 'false'
+        run: npm run desktop:package -- ${{ matrix.args }}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifact }}
+          path: release/*.*
+      - name: Upload desktop installers
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ needs.prepare.outputs.tag }}
+        run: |
+          find release -maxdepth 1 -type f \( -name '*.exe' -o -name '*.dmg' -o -name '*.zip' -o -name '*.deb' -o -name '*.AppImage' \) -print0 | xargs -0 gh release upload "$TAG" --clobber
+  android:
+    needs: prepare
+    runs-on: ubuntu-24.04
+    env:
+      ANDROID_KEY_BASE64: ${{ secrets.ANDROID_KEY_BASE64 }}
+      ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+      ANDROID_KEY_ALIAS: volkspele
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate signing secrets
+        shell: bash
+        run: |
+          test -n "$ANDROID_KEY_BASE64" && test -n "$ANDROID_KEY_PASSWORD" || { echo 'Set ANDROID_KEY_BASE64 and ANDROID_KEY_PASSWORD repository secrets first.'; exit 1; }
+      - uses: ./.github/actions/setup
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: android-actions/setup-android@v3
+      - name: Install Android toolchains
+        run: |
+          sdkmanager 'platforms;android-36' 'build-tools;36.0.0' 'ndk;27.1.12297006'
+          echo "ANDROID_NDK_HOME=$ANDROID_HOME/ndk/27.1.12297006" >> "$GITHUB_ENV"
+          rustup target add aarch64-linux-android armv7-linux-androideabi i686-linux-android x86_64-linux-android
+          cargo install cargo-ndk --locked
+      - name: Compile native Rust bindings
+        env:
+          RUSTFLAGS: -C link-arg=-Wl,-z,max-page-size=16384
+        run: cargo ndk -t arm64-v8a -t armeabi-v7a -t x86 -t x86_64 -o apps/mobile/modules/rust-logic/android/src/main/jniLibs build -p volkspele-logic --release --locked
+      - name: Generate React Native Android project
+        working-directory: apps/mobile
+        run: npx expo prebuild --platform android --no-install
+      - name: Configure permanent signing key
+        run: |
+          printf '%s' "$ANDROID_KEY_BASE64" | base64 --decode > "$RUNNER_TEMP/volkspele.jks"
+          echo "ANDROID_KEYSTORE_PATH=$RUNNER_TEMP/volkspele.jks" >> "$GITHUB_ENV"
+          node scripts/prepare-android.mjs
+      - name: Build universal APK and app bundle
+        working-directory: apps/mobile/android
+        run: ./gradlew assembleRelease bundleRelease --no-daemon
+      - name: Verify and upload Android packages
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ needs.prepare.outputs.tag }}
+        run: |
+          APK=$(find apps/mobile/android/app/build/outputs/apk -name '*.apk' | head -n 1)
+          AAB=$(find apps/mobile/android/app/build/outputs/bundle -name '*.aab' | head -n 1)
+          test -n "$APK" && test -n "$AAB"
+          "$ANDROID_HOME/build-tools/36.0.0/apksigner" verify --verbose "$APK"
+          cp "$APK" "Volkspele-${TAG}-android-universal.apk"
+          cp "$AAB" "Volkspele-${TAG}-android.aab"
+          gh release upload "$TAG" "Volkspele-${TAG}-android-universal.apk" "Volkspele-${TAG}-android.aab" --clobber
+      - uses: actions/upload-artifact@v4
+        with:
+          name: android-packages
+          path: |
+            Volkspele-*.apk
+            Volkspele-*.aab
+  ios-simulator:
+    needs: prepare
+    uses: ./.github/workflows/ios.yml
+    with:
+      release_tag: ${{ needs.prepare.outputs.tag }}
+  publish:
+    needs: [prepare, desktop, android, ios-simulator]
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Publish complete release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ needs.prepare.outputs.tag }}
+        run: |
+          gh release edit "$TAG" --draft=false --latest --notes-file docs/RELEASE-NOTES.md
