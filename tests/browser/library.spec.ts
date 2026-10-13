@@ -45,10 +45,10 @@ test('verified download survives offline launch and failed replacement', async (
 });
 test('mobile navigation, search, pending content and app update link', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
-  await page.route('https://niclan1.github.io/automatic-waffle/**', route => route.fulfill({ json: route.request().url().endsWith('catalog.json') ? catalog(false) : { version: '0.2.0', url: 'https://github.com/Niclan1/automatic-waffle/releases/tag/v0.2.0' } }));
+  await page.route('https://niclan1.github.io/automatic-waffle/**', route => route.fulfill({ json: route.request().url().endsWith('catalog.json') ? catalog(false) : { version: '0.3.0', url: 'https://github.com/Niclan1/automatic-waffle/releases/tag/v0.3.0' } }));
   await page.goto('/');
   await page.getByRole('button', { name: 'Ontdek die liedjies' }).click();
-  await expect(page.getByText('Volkspele 0.2.0 is beskikbaar.')).toBeVisible();
+  await expect(page.getByText('Volkspele 0.3.0 is beskikbaar.')).toBeVisible();
   await page.getByRole('textbox', { name: 'Soek in biblioteek' }).fill('no-match');
   await expect(page.getByText('Geen resultate nie')).toBeVisible();
   await page.getByRole('button', { name: 'Maak soektog skoon' }).click();

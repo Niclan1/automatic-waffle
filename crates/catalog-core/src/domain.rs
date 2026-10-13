@@ -10,6 +10,9 @@ pub fn verify(asset: &Asset, bytes: &[u8]) -> Result<(), String> {
     Ok(())
 }
 pub fn release_url(url: &str) -> bool { let prefix = "https://github.com/Niclan1/automatic-waffle/releases"; url == prefix || url.starts_with(&format!("{prefix}/")) }
+pub fn video_url(url:&str)->bool {["https://youtu.be/-lKfaUs5G3Y","https://youtu.be/tCEbCfYUk6M"].contains(&url)}
+pub fn official_url(url:&str)->bool {["https://volkspele.co.za/avvb/","https://volkspele.co.za/avvb/tuisblad/laer-adreslys/","https://volkspele.co.za/avvb/tuisblad/kontak-ons/"].contains(&url)}
+pub fn external_url(url:&str)->bool {release_url(url)||video_url(url)||official_url(url)}
 pub fn release(text: &str, current: &str) -> Result<Value,String> {
     let value: Value = serde_json::from_str(text).map_err(|e|e.to_string())?;
     let version = value["version"].as_str().ok_or("Missing release version")?;
@@ -35,11 +38,11 @@ pub fn command(request: &Value) -> Result<Value,String> {
             let files=request["files"].as_array().cloned().unwrap_or_default();
             let records:Vec<_>=files.iter().filter(|f|assets.iter().any(|a|a["id"]==f["asset"]["id"])).collect();
             let pick = |kind: &str|assets.iter().find(|a|a["kind"].as_str()==Some(kind)).cloned().unwrap_or(Value::Null);
-            Ok(json!({"audio":pick("audio"),"sheet":pick("sheet"),"video":pick("video"),"records":records,"instructions":assets.iter().filter(|a|matches!(a["kind"].as_str(),Some("steps"|"lyrics"))).collect::<Vec<_>>() }))
+            Ok(json!({"audio":pick("audio"),"sheet":pick("sheet"),"video":pick("video"),"records":records,"links":entry["links"].as_array().cloned().unwrap_or_default(),"instructions":assets.iter().filter(|a|matches!(a["kind"].as_str(),Some("steps"|"lyrics"))).collect::<Vec<_>>() }))
         },
         "external" => {
             let url = request["url"].as_str().ok_or("Missing URL")?;
-            let allowed=match request["kind"].as_str(){Some("release")=>release_url(url),Some("official")=>url=="https://volkspele.co.za/avvb/",_=>release_url(url)||url=="https://volkspele.co.za/avvb/"};
+            let allowed=match request["kind"].as_str(){Some("release")=>release_url(url),Some("official")=>official_url(url),Some("video")=>video_url(url),_=>external_url(url)};
             if !allowed { return Err("Unapproved external URL".into()); }
             Ok(json!(url))
         },
@@ -52,7 +55,7 @@ pub fn command(request: &Value) -> Result<Value,String> {
         "exportName" => {
             let asset=asset(&request["asset"])?;
             let title:String=asset.title.chars().filter(|c|c.is_alphanumeric() || matches!(c,' '|'_'|'-')).collect();
-            let extension=match asset.mime.as_str(){"application/pdf"=>"pdf","image/jpeg"=>"jpg","image/png"=>"png","image/webp"=>"webp","audio/mpeg"=>"mp3","audio/wav"=>"wav","audio/ogg"=>"ogg","video/mp4"=>"mp4","video/webm"=>"webm","text/plain"=>"txt",_=>"bin"};
+            let extension=match asset.mime.as_str(){"application/pdf"=>"pdf","image/jpeg"=>"jpg","image/png"=>"png","image/webp"=>"webp","audio/midi"=>"mid","audio/mpeg"=>"mp3","audio/wav"=>"wav","audio/ogg"=>"ogg","video/mp4"=>"mp4","video/webm"=>"webm","text/plain"=>"txt",_=>"bin"};
             Ok(json!(format!("{title}.{extension}")))
         },
         "playback" => {
@@ -85,5 +88,6 @@ pub fn command(request: &Value) -> Result<Value,String> {
 #[cfg(test)] mod tests {
     use super::*;
     #[test] fn playback_bounds_and_rate() {assert_eq!(command(&json!({"op":"playback","action":"back","position":4})) .unwrap()["seek"].as_f64(),Some(0.0)); assert!(command(&json!({"op":"playback","action":"speed","value":20})).is_err());}
+    #[test] fn newer_apk_release_is_offered(){let result=release(r#"{"version":"0.2.0","url":"https://github.com/Niclan1/automatic-waffle/releases/tag/v0.2.0"}"#, "0.1.1").unwrap();assert_eq!(result["version"],"0.2.0");assert!(video_url("https://youtu.be/-lKfaUs5G3Y"));assert!(!external_url("https://youtu.be.evil.example/-lKfaUs5G3Y"));}
     #[test] fn release_policy() {assert!(release(r#"{"version":"9.0.0","url":"https://evil.example/"}"#,"1.0.0").is_err()); assert!(release(r#"{"version":"1.0.0","url":"https://github.com/Niclan1/automatic-waffle/releases/latest"}"#,"1.0.0").unwrap().is_null());}
 }

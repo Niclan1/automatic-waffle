@@ -1,13 +1,308 @@
 {
   "schemaVersion": 1,
-  "version": "0.1.0",
+  "version": "0.2.0",
   "entries": [
-    { "id": "welkom", "title": "Welkom by Volkspele", "category": "home", "description": "Saam sing, saam speel, saam onthou.", "assets": [{ "id": "welcome-photo", "title": "Volkspele saamtrek — Volkspele webblad", "kind": "image", "file": "branding/welcome.jpg", "mime": "image/jpeg", "version": "1.0.0" }] },
-    { "id": "aanstap-rooies", "title": "Aanstap Rooies", "number": 1, "category": "dance", "description": "Ontdek die liedjie, leer die passies en speel saam in die kring.", "assets": [] },
-    { "id": "blinkvosperd", "title": "Blinkvosperd", "number": 6, "category": "dance", "description": "Leer die passies en grepe, en vind die woorde en musiek op een plek.", "assets": [] },
-    { "id": "geskiedenis", "title": "Die geskiedenis van Volkspele", "category": "history", "description": "Die geskiedenis word hier gepubliseer sodra verwysing A beskikbaar is.", "assets": [] },
-    { "id": "kleredrag", "title": "Ons kleredrag", "category": "clothing", "description": "Inligting oor tradisionele kleredrag word hier gepubliseer sodra verwysing B beskikbaar is.", "assets": [] },
-    { "id": "laer", "title": "Laer inligting", "category": "camp", "description": "Laer inligting word hier gepubliseer sodra verwysing C beskikbaar is.", "assets": [] },
-    { "id": "avvb", "title": "AVVB kontak inligting", "category": "contact", "description": "Goedgekeurde kontakbesonderhede word hier gepubliseer sodra verwysing D beskikbaar is.", "assets": [] }
+    {
+      "id": "welkom",
+      "title": "Welkom by Volkspele",
+      "category": "home",
+      "description": "Saam sing, saam speel, saam onthou.",
+      "assets": [
+        {
+          "id": "welcome-photo",
+          "title": "Volkspele saamtrek — Volkspele webblad",
+          "kind": "image",
+          "file": "branding/welcome.jpg",
+          "mime": "image/jpeg",
+          "version": "1.0.0"
+        }
+      ]
+    },
+    {
+      "id": "aanstap-rooies",
+      "title": "Aanstap Rooies",
+      "number": 1,
+      "category": "dance",
+      "description": "Ontdek die liedjie, leer die passies en speel saam in die kring.",
+      "assets": [
+        {
+          "id": "aanstap-rooies-midi",
+          "title": "Aanstap Rooies — konsep MIDI melodielyn",
+          "kind": "audio",
+          "file": "aanstap-rooies/melody.mid",
+          "mime": "audio/midi",
+          "version": "1.0.0"
+        },
+        {
+          "id": "aanstap-rooies-score",
+          "title": "Aanstap Rooies — oorspronklike partituur",
+          "kind": "sheet",
+          "file": "aanstap-rooies/score.jpg",
+          "mime": "image/jpeg",
+          "version": "1.0.0"
+        },
+        {
+          "id": "aanstap-rooies-lyrics",
+          "title": "Aanstap Rooies — liedjie woorde",
+          "kind": "lyrics",
+          "file": "aanstap-rooies/lyrics.txt",
+          "mime": "text/plain",
+          "version": "1.0.0"
+        },
+        {
+          "id": "aanstap-rooies-steps",
+          "title": "Aanstap Rooies — opstelling en passies",
+          "kind": "steps",
+          "file": "aanstap-rooies/steps.txt",
+          "mime": "text/plain",
+          "version": "1.0.0"
+        },
+        {
+          "id": "aanstap-rooies-intro",
+          "title": "Aanstap Rooies — handleidingfoto",
+          "kind": "image",
+          "file": "aanstap-rooies/introduction.jpg",
+          "mime": "image/jpeg",
+          "version": "1.0.0"
+        },
+        {
+          "id": "aanstap-rooies-midi-notes",
+          "title": "Lees oor die MIDI transkripsie",
+          "kind": "document",
+          "file": "aanstap-rooies/midi-notes.txt",
+          "mime": "text/plain",
+          "version": "1.0.0"
+        }
+      ],
+      "links": [
+        {
+          "title": "Kyk die dansdemonstrasie",
+          "url": "https://youtu.be/-lKfaUs5G3Y"
+        }
+      ]
+    },
+    {
+      "id": "blinkvosperd",
+      "title": "Blinkvosperd",
+      "number": 6,
+      "category": "dance",
+      "description": "Leer die passies en grepe, en vind die woorde en musiek op een plek.",
+      "assets": [
+        {
+          "id": "blinkvosperd-midi",
+          "title": "Blinkvosperd — konsep MIDI melodielyn",
+          "kind": "audio",
+          "file": "blinkvosperd/melody.mid",
+          "mime": "audio/midi",
+          "version": "1.0.0"
+        },
+        {
+          "id": "blinkvosperd-score",
+          "title": "Blinkvosperd — oorspronklike partituur",
+          "kind": "sheet",
+          "file": "blinkvosperd/score.jpg",
+          "mime": "image/jpeg",
+          "version": "1.0.0"
+        },
+        {
+          "id": "blinkvosperd-lyrics",
+          "title": "Blinkvosperd — liedjie woorde",
+          "kind": "lyrics",
+          "file": "blinkvosperd/lyrics.txt",
+          "mime": "text/plain",
+          "version": "1.0.0"
+        },
+        {
+          "id": "blinkvosperd-steps",
+          "title": "Blinkvosperd — opstelling en passies",
+          "kind": "steps",
+          "file": "blinkvosperd/steps.txt",
+          "mime": "text/plain",
+          "version": "1.0.0"
+        },
+        {
+          "id": "blinkvosperd-intro",
+          "title": "Blinkvosperd — handleidingfoto",
+          "kind": "image",
+          "file": "blinkvosperd/introduction.jpg",
+          "mime": "image/jpeg",
+          "version": "1.0.0"
+        },
+        {
+          "id": "blinkvosperd-midi-notes",
+          "title": "Lees oor die MIDI transkripsie",
+          "kind": "document",
+          "file": "blinkvosperd/midi-notes.txt",
+          "mime": "text/plain",
+          "version": "1.0.0"
+        }
+      ],
+      "links": [
+        {
+          "title": "Kyk die dansdemonstrasie",
+          "url": "https://youtu.be/tCEbCfYUk6M"
+        }
+      ]
+    },
+    {
+      "id": "geskiedenis",
+      "title": "Die geskiedenis van Volkspele",
+      "category": "history",
+      "description": "Lees hoe die beweging in 1912 ontstaan het en oor sy toere en tradisies.",
+      "assets": [
+        {
+          "id": "history-a",
+          "title": "Geskiedenis van die AVVB — verwysing A",
+          "kind": "document",
+          "file": "history/geskiedenis.txt",
+          "mime": "text/plain",
+          "version": "1.0.0"
+        }
+      ]
+    },
+    {
+      "id": "kleredrag",
+      "title": "Ons kleredrag",
+      "category": "clothing",
+      "description": "Die ontwikkelingsgeskiedenis van die volkspelers se drag.",
+      "assets": [
+        {
+          "id": "clothing-b",
+          "title": "Kleredrag van die Volkspelers — verwysing B",
+          "kind": "document",
+          "file": "clothing/kleredrag.txt",
+          "mime": "text/plain",
+          "version": "1.0.0"
+        }
+      ]
+    },
+    {
+      "id": "laer",
+      "title": "Laer inligting",
+      "category": "camp",
+      "description": "Vind jou laer: ’n aflaaibare adreslys en die verskafde verwysingsfoto’s.",
+      "assets": [
+        {
+          "id": "camp-directory",
+          "title": "AVVB laer-adreslys — 13 Oktober 2026",
+          "kind": "document",
+          "file": "camp/laerlys.txt",
+          "mime": "text/plain",
+          "version": "1.0.0"
+        },
+        {
+          "id": "camp-photo-01",
+          "title": "Laer-adreslys — verwysingsfoto 1",
+          "kind": "image",
+          "file": "camp/laerlys-01.jpg",
+          "mime": "image/jpeg",
+          "version": "1.0.0"
+        },
+        {
+          "id": "camp-photo-02",
+          "title": "Laer-adreslys — verwysingsfoto 2",
+          "kind": "image",
+          "file": "camp/laerlys-02.jpg",
+          "mime": "image/jpeg",
+          "version": "1.0.0"
+        },
+        {
+          "id": "camp-photo-03",
+          "title": "Laer-adreslys — verwysingsfoto 3",
+          "kind": "image",
+          "file": "camp/laerlys-03.jpg",
+          "mime": "image/jpeg",
+          "version": "1.0.0"
+        },
+        {
+          "id": "camp-photo-04",
+          "title": "Laer-adreslys — verwysingsfoto 4",
+          "kind": "image",
+          "file": "camp/laerlys-04.jpg",
+          "mime": "image/jpeg",
+          "version": "1.0.0"
+        },
+        {
+          "id": "camp-photo-05",
+          "title": "Laer-adreslys — verwysingsfoto 5",
+          "kind": "image",
+          "file": "camp/laerlys-05.jpg",
+          "mime": "image/jpeg",
+          "version": "1.0.0"
+        },
+        {
+          "id": "camp-photo-06",
+          "title": "Laer-adreslys — verwysingsfoto 6",
+          "kind": "image",
+          "file": "camp/laerlys-06.jpg",
+          "mime": "image/jpeg",
+          "version": "1.0.0"
+        },
+        {
+          "id": "camp-photo-07",
+          "title": "Laer-adreslys — verwysingsfoto 7",
+          "kind": "image",
+          "file": "camp/laerlys-07.jpg",
+          "mime": "image/jpeg",
+          "version": "1.0.0"
+        },
+        {
+          "id": "camp-photo-08",
+          "title": "Laer-adreslys — verwysingsfoto 8",
+          "kind": "image",
+          "file": "camp/laerlys-08.jpg",
+          "mime": "image/jpeg",
+          "version": "1.0.0"
+        },
+        {
+          "id": "camp-photo-09",
+          "title": "Laer-adreslys — verwysingsfoto 9",
+          "kind": "image",
+          "file": "camp/laerlys-09.jpg",
+          "mime": "image/jpeg",
+          "version": "1.0.0"
+        },
+        {
+          "id": "camp-photo-10",
+          "title": "Laer-adreslys — verwysingsfoto 10",
+          "kind": "image",
+          "file": "camp/laerlys-10.jpg",
+          "mime": "image/jpeg",
+          "version": "1.0.0"
+        }
+      ],
+      "links": [
+        {
+          "title": "Amptelike laer-adreslys",
+          "url": "https://volkspele.co.za/avvb/tuisblad/laer-adreslys/"
+        }
+      ]
+    },
+    {
+      "id": "avvb",
+      "title": "AVVB kontak inligting",
+      "category": "contact",
+      "description": "Amptelike webblad en kontakvorm vir die AVVB.",
+      "assets": [
+        {
+          "id": "contact-d",
+          "title": "AVVB kontak — verwysing D",
+          "kind": "document",
+          "file": "contact/avvb.txt",
+          "mime": "text/plain",
+          "version": "1.0.0"
+        }
+      ],
+      "links": [
+        {
+          "title": "AVVB webblad",
+          "url": "https://volkspele.co.za/avvb/"
+        },
+        {
+          "title": "Amptelike kontakvorm",
+          "url": "https://volkspele.co.za/avvb/tuisblad/kontak-ons/"
+        }
+      ]
+    }
   ]
 }

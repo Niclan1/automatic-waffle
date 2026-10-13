@@ -2,12 +2,15 @@ use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
 pub mod domain;
 pub mod audio;
+pub mod midi;
 #[cfg(target_arch = "wasm32")] mod browser;
 #[derive(Deserialize, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Asset { pub id: String, pub title: String, pub kind: String, pub path: String, pub sha256: String, pub bytes: u64, pub mime: String, pub version: String }
 #[derive(Deserialize, Serialize)]
-pub struct Entry { pub id: String, pub title: String, pub category: String, pub number: Option<u32>, pub description: String, pub assets: Vec<Asset> }
+pub struct Link {pub title:String,pub url:String}
+#[derive(Deserialize, Serialize)]
+pub struct Entry { pub id: String, pub title: String, pub category: String, pub number: Option<u32>, pub description: String, pub assets: Vec<Asset>, #[serde(default,skip_serializing_if="Vec::is_empty")] pub links:Vec<Link> }
 #[derive(Deserialize, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Catalog { pub schema_version: u32, pub version: String, pub entries: Vec<Entry> }
@@ -26,13 +29,14 @@ pub fn validate_catalog(text: &str) -> Result<Catalog, String> {
     let mut entries = std::collections::HashSet::new();
     for e in &c.entries {
         if e.id.is_empty() || !entries.insert(&e.id) { return Err("Duplicate/empty entry ID".into()); }
+        for link in &e.links {if !domain::external_url(&link.url) {return Err("Invalid catalogue link".into());}}
         for a in &e.assets {
             if a.id.is_empty() || !ids.insert(&a.id) { return Err("Duplicate/empty asset ID".into()); }
             if a.sha256.len() != 64 || !a.sha256.bytes().all(|b| b.is_ascii_hexdigit() && !b.is_ascii_uppercase()) { return Err("Invalid SHA-256".into()); }
             if a.path != format!("content/{}", a.sha256) { return Err("Asset path must match content hash".into()); }
             if a.bytes == 0 || a.bytes > 250_000_000 { return Err("Invalid file size".into()); }
             if !["video", "audio", "lyrics", "steps", "document", "image", "sheet"].contains(&a.kind.as_str()) { return Err("Unknown asset kind".into()); }
-            let allowed = match a.kind.as_str() { "sheet" => ["application/pdf","image/jpeg","image/png","image/webp"].as_slice(), "image" => ["image/jpeg","image/png","image/webp"].as_slice(), "video" => ["video/mp4","video/webm"].as_slice(), "audio" => ["audio/mpeg","audio/ogg","audio/wav"].as_slice(), _ => ["text/plain","application/pdf"].as_slice() };
+            let allowed = match a.kind.as_str() { "sheet" => ["application/pdf","image/jpeg","image/png","image/webp"].as_slice(), "image" => ["image/jpeg","image/png","image/webp"].as_slice(), "video" => ["video/mp4","video/webm"].as_slice(), "audio" => ["audio/mpeg","audio/ogg","audio/wav","audio/midi"].as_slice(), _ => ["text/plain","application/pdf"].as_slice() };
             if !allowed.contains(&a.mime.as_str()) { return Err("Unsupported asset MIME type".into()); }
             semver::Version::parse(&a.version).map_err(|e| e.to_string())?;
         }

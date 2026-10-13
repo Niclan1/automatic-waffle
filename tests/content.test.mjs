@@ -34,3 +34,14 @@ test('duplicate IDs are rejected', async t => {
   await writeFile(path.join(root, 'content/catalog.source.json'), JSON.stringify(source([asset, asset])));
   await assert.rejects(buildContent(root), /Duplicate/);
 });
+
+test('MIDI is published for new clients while the legacy APK catalogue stays compatible',async t=>{
+  const root=await fixture(t);
+  await writeFile(path.join(root,'content/files/practice.mid'),Buffer.from('MThd'));
+  await writeFile(path.join(root,'content/catalog.source.json'),JSON.stringify(source([{id:'midi',title:'MIDI',kind:'audio',mime:'audio/midi',version:'1.0.0',file:'practice.mid'}])));
+  await buildContent(root);
+  const current=JSON.parse(await readFile(path.join(root,'dist/api/v2/catalog.json'),'utf8'));
+  const legacy=JSON.parse(await readFile(path.join(root,'dist/api/v1/catalog.json'),'utf8'));
+  assert.equal(current.entries[0].assets[0].mime,'audio/midi');
+  assert.equal(legacy.entries[0].assets.length,0);
+});

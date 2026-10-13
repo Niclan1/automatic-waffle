@@ -1,9 +1,10 @@
 export type Asset = { id: string; title: string; kind: 'video' | 'audio' | 'lyrics' | 'steps' | 'document' | 'image' | 'sheet'; path: string; sha256: string; bytes: number; mime: string; version: string };
-export type Entry = { id: string; title: string; category: string; number?: number; description: string; assets: Asset[] };
+export type Entry = { id: string; title: string; category: string; number?: number; description: string; assets: Asset[]; links?:{title:string;url:string}[] };
 export type Catalog = { schemaVersion: number; version: string; entries: Entry[] };
 export type ReleaseInfo = { version: string; url: string };
 export type Saved = { asset: Asset; savedAt: string; blob?: Blob };
-export type Lesson = {audio?:Asset;sheet?:Asset;video?:Asset;instructions:Asset[];records:Saved[]};
+export type Lesson = {audio?:Asset;sheet?:Asset;video?:Asset;instructions:Asset[];records:Saved[];links:{title:string;url:string}[]};
 export type CatalogView = {entries:Entry[];assets:Asset[];outdated:Saved[];totalBytes:number};
 export type Playback = {speed:number;loop:boolean;playing:boolean;seek:number|null;transport:'play'|'pause'|null};
-export type AudioPreview = {duration:number;sampleRate:number;channels:number;waveform:number[]};
+export type MidiNotation = {musicXml?:string;duration:number;rollHeight:number;roll:{x:number;y:number;width:number;height:number;pitch:number;start:number;end:number}[]};
+export type AudioPreview = {duration:number;sampleRate:number;channels:number;waveform:number[];midi?:MidiNotation};

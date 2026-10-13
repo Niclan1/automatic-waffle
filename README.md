@@ -55,4 +55,8 @@ The React Native app stores downloaded media in its document directory and uses 
 
 The welcome page follows the photograph-led layout and navigation of https://volkspele.co.za/avvb/. Its photograph is served remotely from the content manifest.
 
-This repository currently contains the two named dances and the navigation from the brief. References A–L are missing; content remains explicitly pending until the real source files are supplied.
+The published library includes the supplied history, clothing notes, lyrics, original sheet photographs, dance introductions and a dated AVVB laer directory. MIDI practice files are concept melody transcriptions that need musical proofreading; they do not reproduce the full piano accompaniment. Missing full dance instructions and later photographs remain pending.
+
+Rust parses MIDI, prepares MusicXML notation and piano-roll geometry, and synthesizes piano-like WAV audio. React renders the supplied results; OpenSheetMusicDisplay draws notation on web and desktop. Native mobile shows the original sheet image and piano roll. Saved files reopen offline, including the production website shell. `api/v2/catalog.json` includes MIDI; the legacy v1 catalogue excludes MIDI so older APKs continue to work.
+
+See [validation coverage](docs/VALIDATION.md) for regression, native render, browser screenshot and production offline tests.

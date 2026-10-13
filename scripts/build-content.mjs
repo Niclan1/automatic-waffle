@@ -16,7 +16,7 @@ export async function buildContent(root = process.cwd(), output = path.join(root
       assetIds.add(asset.id);
       if (!['video', 'audio', 'lyrics', 'steps', 'document', 'image', 'sheet'].includes(asset.kind)) throw new Error('Unknown asset kind');
       if (!/^\d+\.\d+\.\d+$/.test(asset.version)) throw new Error('Invalid asset version');
-      const allowedMime = { video: ['video/mp4', 'video/webm'], audio: ['audio/mpeg', 'audio/ogg', 'audio/wav'], lyrics: ['text/plain', 'application/pdf'], steps: ['text/plain', 'application/pdf'], document: ['text/plain', 'application/pdf'], image: ['image/jpeg', 'image/png', 'image/webp'], sheet: ['application/pdf', 'image/jpeg', 'image/png', 'image/webp'] };
+      const allowedMime = { video: ['video/mp4', 'video/webm'], audio: ['audio/mpeg', 'audio/ogg', 'audio/wav', 'audio/midi'], lyrics: ['text/plain', 'application/pdf'], steps: ['text/plain', 'application/pdf'], document: ['text/plain', 'application/pdf'], image: ['image/jpeg', 'image/png', 'image/webp'], sheet: ['application/pdf', 'image/jpeg', 'image/png', 'image/webp'] };
       if (!allowedMime[asset.kind].includes(asset.mime)) throw new Error('Unsupported MIME type');
       if (typeof asset.file !== 'string' || path.isAbsolute(asset.file)) throw new Error('Invalid source file');
       const file = await realpath(path.resolve(contentRoot, asset.file));
@@ -30,7 +30,12 @@ export async function buildContent(root = process.cwd(), output = path.join(root
     }
   }
   await mkdir(path.join(output, 'api/v1'), { recursive: true });
-  await writeFile(path.join(output, 'api/v1/catalog.json'), JSON.stringify(source, null, 2) + '\n');
+  // Older APKs do not understand MIDI. Keep their catalogue usable while the
+  // MIDI-capable clients use v2; both share the same app-update endpoint.
+  await mkdir(path.join(output, 'api/v2'), { recursive: true });
+  await writeFile(path.join(output, 'api/v2/catalog.json'), JSON.stringify(source, null, 2) + '\n');
+  const legacy = { ...source, entries: source.entries.map(entry => ({ ...entry, assets: entry.assets.filter(asset => asset.mime !== 'audio/midi') })) };
+  await writeFile(path.join(output, 'api/v1/catalog.json'), JSON.stringify(legacy, null, 2) + '\n');
   const app = JSON.parse(await readFile(path.join(root, 'content/app.json'), 'utf8'));
   if (!/^\d+\.\d+\.\d+$/.test(app.version) || !/^https:\/\/github\.com\/Niclan1\/automatic-waffle\/releases(?:\/|$)/.test(app.url)) throw new Error('Invalid app release metadata');
   await writeFile(path.join(output, 'api/v1/app.json'), JSON.stringify(app, null, 2) + '\n');

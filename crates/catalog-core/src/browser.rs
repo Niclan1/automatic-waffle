@@ -50,7 +50,7 @@ pub async fn browser_command(request: &str, host: JsValue, signal: JsValue, prog
     match request["op"].as_str().unwrap_or("") {
         "catalog"=>{
             let base=request["base"].as_str().ok_or_else(||error("Missing base"))?;
-            let fresh=async {let raw=text(&endpoint(base,"api/v1/catalog.json")?).await?; let catalog=crate::validate_catalog(&raw).map_err(error)?; let catalog=js(&serde_json::to_value(catalog).map_err(error)?)?;host_call(&host,"putCatalog",&[catalog.clone()]).await?;Ok::<_,JsValue>(catalog)}.await;
+            let fresh=async {let raw=text(&endpoint(base,"api/v2/catalog.json")?).await?; let catalog=crate::validate_catalog(&raw).map_err(error)?; let catalog=js(&serde_json::to_value(catalog).map_err(error)?)?;host_call(&host,"putCatalog",&[catalog.clone()]).await?;Ok::<_,JsValue>(catalog)}.await;
             match fresh {Ok(catalog)=>{let result=js(&json!({"offline":false}))?;Reflect::set(&result,&"catalog".into(),&catalog)?;Ok(result)},Err(failure)=>{let cached=host_call(&host,"getCatalog",&[]).await?;if cached.is_undefined()||cached.is_null(){return Err(failure);}crate::validate_catalog(&value(&cached)?.to_string()).map_err(error)?;let result=js(&json!({"offline":true}))?;Reflect::set(&result,&"catalog".into(),&cached)?;Ok(result)}}
         },
         "release"=>js(&domain::release(&text(&endpoint(request["base"].as_str().ok_or_else(||error("Missing base"))?,"api/v1/app.json")?).await?,request["current"].as_str().ok_or_else(||error("Missing version"))?).map_err(error)?),
@@ -76,9 +76,10 @@ pub async fn browser_command(request: &str, host: JsValue, signal: JsValue, prog
             if record.is_undefined(){return Err(error("Saved file is missing"));}
             let asset=domain::asset(&value(&record)?["asset"]).map_err(error)?;
             let bytes=Uint8Array::new(&host_call(&host,"readFile",&[record]).await?).to_vec();domain::verify(&asset,&bytes).map_err(error)?;
-            let parts=Array::new();parts.push(&Uint8Array::from(bytes.as_slice()));let options=web_sys::BlobPropertyBag::new();options.set_type(&asset.mime);
+            let midi=if request["op"]=="preview" && asset.mime=="audio/midi" {Some(crate::midi::prepare(&bytes,&asset.title).map_err(error)?)}else{None};
+            let parts=Array::new();parts.push(&Uint8Array::from(midi.as_ref().map(|m|m.wav.as_slice()).unwrap_or(bytes.as_slice())));let options=web_sys::BlobPropertyBag::new();options.set_type(if midi.is_some(){"audio/wav"}else{&asset.mime});
             let blob:JsValue=web_sys::Blob::new_with_u8_array_sequence_and_options(&parts,&options)?.into();
-            if request["op"]=="preview" {let audio=if asset.kind=="audio"{crate::audio::prepare(Box::new(std::io::Cursor::new(bytes.clone()))).map_err(error)?}else{Value::Null};let result=js(&json!({"audio":audio}))?;Reflect::set(&result,&"bytes".into(),&Uint8Array::from(bytes.as_slice()))?;if asset.mime=="text/plain"{Reflect::set(&result,&"text".into(),&String::from_utf8(bytes).map_err(error)?.into())?;}Reflect::set(&result,&"blob".into(),&blob)?;Ok(result)}else{Ok(blob)}
+            if request["op"]=="preview" {let audio=if let Some(midi)=midi{let mut audio=midi.audio;audio["midi"]=midi.notation;audio}else if asset.kind=="audio"{crate::audio::prepare(Box::new(std::io::Cursor::new(bytes.clone()))).map_err(error)?}else{Value::Null};let result=js(&json!({"audio":audio}))?;Reflect::set(&result,&"bytes".into(),&Uint8Array::from(bytes.as_slice()))?;if asset.mime=="text/plain"{Reflect::set(&result,&"text".into(),&String::from_utf8(bytes).map_err(error)?.into())?;}Reflect::set(&result,&"blob".into(),&blob)?;Ok(result)}else{Ok(blob)}
         },
         "remove"=>{
             let id=request["id"].as_str().ok_or_else(||error("Missing file ID"))?;let old=host_call(&host,"getFile",&[id.into()]).await?;host_call(&host,"deleteFile",&[id.into()]).await?;if !old.is_undefined(){let old=value(&old)?;collect(&host,old["asset"]["sha256"].as_str().ok_or_else(||error("Missing hash"))?).await?;}Ok(JsValue::UNDEFINED)

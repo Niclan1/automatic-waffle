@@ -1,0 +1,1 @@
+module.exports={preset:'jest-expo',roots:['<rootDir>/apps/mobile/src'],testMatch:['<rootDir>/apps/mobile/**/__tests__/*.test.tsx'],testEnvironment:'node',testTimeout:30000,transformIgnorePatterns:['node_modules/(?!((jest-)?react-native|@react-native|@testing-library|test-renderer|expo(nent)?|@expo(nent)?/|react-native-svg))']};

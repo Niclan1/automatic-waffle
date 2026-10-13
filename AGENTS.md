@@ -10,3 +10,5 @@ The user requires Rust for every application behavior that is not directly visua
 - Development/build automation can use Node; it is not the shipped application logic.
 
 Run Rust tests and WASM build after Rust changes; web/mobile TypeScript and relevant browser tests after frontend changes. Validate native bridge changes with an APK build. Use `actionlint` for workflow edits.
+
+Keep regression tests for each changed behavior. Use native render tests for mobile controls, browser integration and reviewed phone/desktop screenshot baselines for visuals, and production offline tests for shell caching. The service worker is a mechanical shell adapter; media, HTTP decisions and MIDI preparation remain in Rust.

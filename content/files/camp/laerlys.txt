@@ -1,0 +1,37 @@
+AVVB laer-adreslys
+
+DORP | LAERNAAM | LID NAAM | KONTAK NR. | E-POS ADRES
+PRETORIA | AANDBLOM | ANTON VAN VOLLENHOVEN | 083 291 6104 | acvv@absamail.co.za vanvjm@gmail.com
+ALBERTON | ALBATROS | MIMI STRYDOM | 072 528 0802 | wm.mimi@hotmail.com
+GEORGE | EENDRAG | KAREN TEMMINGH | 062 288 0965 | kallatemmingh@gmail.com
+PRETORIA | ERIKA | PIET VAN DER WALT | 082 788 4871 | piet195311@gmail.com
+PRIMROSE | INSPAN | STIAAN V D WALT | 079 473 7385 | stiaanvdw10@gmail.com
+PRETORIA | JAKARANDA JUNIOR | ELRI VAN DER KRUK | 079 555 3432 | elrivdkruk@gmail.com
+PRETORIA | KALKOENTJIE JUNIOR | JACO GROENEWALD | 078 186 4285 | jacoG00.007@gmail.com
+SECUNDA | KENMEKAAR | CASPER BOTHA | 071 604 8748 | casperbotha95@gmail.com
+OUDTSHOORN | KLAPPERBOS | KERNEELS BARNARDO | 072 625 1384 | kerneelsb68@gmail.com
+NYLSTROOM | KRANSKOP | KOBUS LE ROUX | 083 6781925 | kobuslrx1@gmail.com
+RANDFONTEIN | LOUTERGOUD | 1. OCKERT ELS | 082 747 8278 | christaels68@gmail.com
+RANDFONTEIN | LOUTERGOUD | 2. CJ NEL | 072 273 8256 | careljnel@gmail.com
+PIETERSBURG | MAROELA | 1. ANTON BOTHA | 083 628 6094 | atbotha@gmail.com
+PIETERSBURG | MAROELA | 2. NAAS CORNELIUS | 071 283 4857 | naascornelius@gmail.com
+ORANIA | ORANIA | 1. FRANCES MURPHY | 082 254 5207 | frances.murphy39@gmail.com
+ORANIA | ORANIA | 2. YOLANDE SWANEPOEL | 084 251 3952 | rightonwood1@yahoo.co.za
+BETHAL | PIEREWIET | VLAM VENTER | 083 326 2626 | vlam.venter@patmosss.co.za
+POTGIETERSRUS | PIET POTGIETER | PERIE V EEDEN | 084 406 0954 | p.vaneeden@absamail.co.za
+CENTURION | POLKADRAAI | HUGO LOMBAARD | 082 413 8594 | wawiel111@gmail.com
+WORCESTER | RIETSANGERS | KOBUS SMIT | 082 690 9811 | kobussmit0239@gmail.com
+KEMPTONPARK | SAAMSTAAN | ANNABÉ PRETORIUS | 083 654 8967 | annabe.pretorius@plasticssa.co.za
+BETHLEHEM | SONSKYN | CORRIE V D WALT | 072 574 7189 | corrievanderwalt123@gmail.com
+KIMBERLEY | SPRINGBOK | NICO TERBLANCHE | 082 370 4417 | nterblanche15@gmail.com
+GERMISTON/BOKSBURG | SUIDERLAND | JOHAN DE BEER | 082 443 3783 | jdebeer783@gmail.com
+PRETORIA | TIEKIEDRAAI | TOBIE MALAN | 082 857 4728 | tiekiedraailaer@gmail.com
+PRETORIA | TONTELDOOS | JOHAN VAN VOLLENHOVEN | 068 357 1027 | jhvvollenhoven@gmail.com
+PAARL | TYGERBERG SENIOR | BERTIE BRINK | 082 378 6350 | am.brink47@gmail.com ambrink@absamail.co.za
+PAARL | TYGERBERG JUNIOR | 1. ROELOF VENTER | 083 751 4382 | Roelofven26@gmail.com
+PAARL | TYGERBERG JUNIOR | 2. WILMA STOLS | 083 338 4067 | wilmavolkspele@gmail.com
+SASOL/VANDERBIJLPARK | VAALRIVIER | KARIEN BREYTENBACH | 078 631 9359 | karienbr5@gmail.com
+BLOEMFONTEIN | VAN RIEBEECK | MIKE JACOBS | 082 850 3313 | mike64jacobs@gmail.com
+
+Bron: https://volkspele.co.za/avvb/tuisblad/laer-adreslys/
+Geraadpleeg: 13 Oktober 2026. Kontakbesonderhede kan verander. Die oorspronklike verwysingsfoto’s is ook beskikbaar.

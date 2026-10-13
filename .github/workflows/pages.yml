@@ -1,10 +1,8 @@
 name: GitHub Pages
 on:
-  push:
-    branches: [main]
   workflow_dispatch:
   workflow_run:
-    workflows: [Release apps]
+    workflows: [Checks, Release apps]
     types: [completed]
 permissions:
   contents: read
@@ -15,12 +13,12 @@ concurrency:
   cancel-in-progress: false
 jobs:
   build:
-    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
+    if: github.event_name != 'workflow_run' || (github.event.workflow_run.conclusion == 'success' && (github.event.workflow_run.name == 'Release apps' || (github.event.workflow_run.event == 'push' && github.event.workflow_run.head_branch == 'main')))
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: main
+          ref: ${{ github.event.workflow_run.head_sha || github.ref }}
       - uses: ./.github/actions/setup
       - run: npm test
       - name: Use latest published app version

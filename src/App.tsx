@@ -1,10 +1,11 @@
 import { useEffect, useRef, useState } from 'react';
 import { ArrowDownToLine, ArrowRight, BookOpen, Check, CircleHelp, Download, Flower2, FolderHeart, Home, History, LoaderCircle, Menu, Music2, Play, RefreshCw, Search, Shirt, Tent, Trash2, Users, WifiOff, X } from 'lucide-react';
 import { Practice, PracticeMedia } from '@/components/Practice';
+import { MidiScore } from '@/components/MidiScore';
 import { SheetMusic } from '@/components/SheetMusic';
 import { Button } from '@/components/ui/button';
-import { API_BASE, APP_VERSION, checkRelease, catalogView, assetState, exportName, previewAsset, download, exportNative, fileBlob, filePreview, loadCatalog, openOfficial, openRelease, removeFile, savedFiles } from '@/lib/library';
-import type { Asset, Catalog, Entry, ReleaseInfo, Saved } from '@/lib/types';
+import { API_BASE, APP_VERSION, checkRelease, catalogView, assetState, exportName, previewAsset, download, exportNative, fileBlob, filePreview, loadCatalog, openOfficial, openLink, openRelease, removeFile, savedFiles } from '@/lib/library';
+import type { Asset, Catalog, Entry, ReleaseInfo, Saved, AudioPreview } from '@/lib/types';
 const sections = [
   { id: 'home', label: 'Tuisblad', icon: Home },
   { id: 'dance', label: 'Liedjies & speletjies', icon: Music2 },
@@ -29,7 +30,7 @@ export default function App() {
   const [release, setRelease] = useState<ReleaseInfo | null>(null);
   const [progress, setProgress] = useState<Record<string, number>>({});
   const controllers = useRef(new Map<string, AbortController>());
-  const [viewer, setViewer] = useState<{ asset: Asset; url: string; text?: string; bytes?:Uint8Array }>();
+  const [viewer, setViewer] = useState<{ asset: Asset; url: string; text?: string; bytes?:Uint8Array; audio?:AudioPreview }>();
   const [photoError, setPhotoError] = useState(false);
   const [photoUrl,setPhotoUrl]=useState<string>();
   const dialogRef = useRef<HTMLDialogElement>(null);
@@ -53,8 +54,8 @@ export default function App() {
   };
   const view = async (record: Saved) => {
     try {
-      const {blob,text,bytes}=await filePreview(record);
-      setViewer({asset:record.asset,url:URL.createObjectURL(blob),text,bytes});
+      const {blob,text,bytes,audio}=await filePreview(record);
+      setViewer({asset:record.asset,url:URL.createObjectURL(blob),text,bytes,audio});
     } catch (e) { setNotice(String(e)); }
   };
   const remove = async (record: Saved) => { try { await removeFile(record.asset.id); await refreshFiles(); setNotice('Lêer verwyder.'); } catch { setNotice('Lêer kon nie verwyder word nie.'); } };
@@ -126,7 +127,7 @@ export default function App() {
         </> : <>
           <div className="section-heading"><div><span className="eyebrow">{section === 'dance' ? 'VIND JOU RITME' : 'ONS TRADISIE'}</span><h2>{sections.find(s => s.id === section)?.label}</h2><p>{section === 'dance' ? 'Kies ’n liedjie. Leer die passies. Speel saam.' : 'Ontdek meer oor die mense en tradisies van Volkspele.'}</p></div><label className="search-box"><Search size={18}/><input aria-label="Soek in biblioteek" placeholder="Soek in die biblioteek…" value={query} onChange={e => setQuery(e.target.value)}/>{query && <button aria-label="Maak soektog skoon" onClick={() => setQuery('')}><X size={15}/></button>}</label></div>
           <div className="filter-row"><span className="filter-chip">{section === 'dance' ? 'Alle liedjies' : 'Alle inligting'}</span><span>{entries.length} {section === 'dance' ? 'liedjies' : 'inskrywings'}</span><span className="filter-right">{catalog ? `Biblioteek v${catalog.version}` : busy ? 'Besig om te laai…' : 'Biblioteek nie beskikbaar nie'}</span></div>
-          <div className="entry-grid">{entries.map((entry, index) => section === 'dance' ? <button className="dance-card" key={entry.id} onClick={() => setSelected(entry)}><div className={`card-art card-art-${index % 2}`}><div className="card-rings"/><Music2 className="card-music" size={48} strokeWidth={1.3}/><span className="card-number">{String(entry.number ?? index + 1).padStart(2, '0')}</span><span className="card-art-word">{index % 2 ? 'SPEEL SAAM' : 'HOU DIE RITME'}</span></div><div className="card-body"><span className="card-category">LIEDJIE & SPELETJIE</span><h3>{entry.title}<ArrowRight size={20}/></h3><p>{entry.description}</p><div className="card-meta"><span><BookOpen size={14}/>Bladmusiek</span><span><Play size={14}/>Video</span><span><BookOpen size={14}/>Passies</span><span><Music2 size={14}/>Musiek</span></div><div className="card-state">{entry.assets.length ? <><span className="status-dot"/>{entry.assets.length} lêers beskikbaar</> : <><span className="pending-dot"/>Inhoud word voorberei</>}</div></div></button> : <article className="info-card" key={entry.id}><BookOpen size={24}/><h3>{entry.title}</h3><p>{entry.description}</p>{entry.assets.length ? entry.assets.map(a => assetRow(a)) : <span className="pill">Inhoud word voorberei</span>}</article>)}</div>
+          <div className="entry-grid">{entries.map((entry, index) => section === 'dance' ? <button className="dance-card" key={entry.id} onClick={() => setSelected(entry)}><div className={`card-art card-art-${index % 2}`}><div className="card-rings"/><Music2 className="card-music" size={48} strokeWidth={1.3}/><span className="card-number">{String(entry.number ?? index + 1).padStart(2, '0')}</span><span className="card-art-word">{index % 2 ? 'SPEEL SAAM' : 'HOU DIE RITME'}</span></div><div className="card-body"><span className="card-category">LIEDJIE & SPELETJIE</span><h3>{entry.title}<ArrowRight size={20}/></h3><p>{entry.description}</p><div className="card-meta"><span><BookOpen size={14}/>Bladmusiek</span><span><Play size={14}/>Video</span><span><BookOpen size={14}/>Passies</span><span><Music2 size={14}/>Musiek</span></div><div className="card-state">{entry.assets.length ? <><span className="status-dot"/>{entry.assets.length} lêers beskikbaar</> : <><span className="pending-dot"/>Inhoud word voorberei</>}</div></div></button> : <article className="info-card" key={entry.id}><BookOpen size={24}/><h3>{entry.title}</h3><p>{entry.description}</p>{entry.links?.map(link=><p key={link.url}><button className="button button-outline" onClick={()=>void openLink(link.url).catch(e=>setNotice(String(e)))}>{link.title} ↗</button></p>)}{entry.assets.length ? entry.assets.map(a => assetRow(a)) : <span className="pill">Inhoud word voorberei</span>}</article>)}</div>
           {!entries.length && <div className="empty-state">{busy ? <LoaderCircle className="spin" size={28}/> : <Search size={28}/>}<h3>{busy ? 'Biblioteek word gelaai' : query ? 'Geen resultate nie' : 'Biblioteek nie beskikbaar nie'}</h3><p>{query ? 'Probeer ’n ander liedjie se naam.' : 'Kyk jou verbinding na en probeer weer.'}</p>{!busy && !query && <Button onClick={() => void sync()}>Probeer weer</Button>}</div>}
           {section === 'dance' && <div className="library-note"><Check size={18}/><p><strong>Jou biblioteek groei saam met jou.</strong> Nuwe inhoud word apart afgelaai — sonder om die app weer te installeer.</p></div>}
         </>}
@@ -134,6 +135,6 @@ export default function App() {
       </div>
     </main>
     {notice && <div className="toast" role="status"><span>{notice}</span><button aria-label="Sluit kennisgewing" onClick={() => setNotice('')}><X size={18}/></button></div>}
-    <dialog ref={dialogRef} className="viewer" onClose={() => setViewer(undefined)} onCancel={() => setViewer(undefined)}>{viewer && <><div className="viewer-header"><h2>{viewer.asset.title}</h2><Button variant="ghost" size="icon" aria-label="Sluit lêer" onClick={() => dialogRef.current?.close()}><X/></Button></div>{viewer.asset.kind === 'video' ? <PracticeMedia url={viewer.url} kind="video"/> : viewer.asset.kind === 'audio' ? <PracticeMedia url={viewer.url} kind="audio"/> : viewer.asset.kind === 'image' ? <img src={viewer.url} alt={viewer.asset.title} style={{maxWidth:'100%'}}/> : viewer.text !== undefined ? <pre>{viewer.text}</pre> : viewer.asset.mime === 'application/pdf' ? <><SheetMusic data={viewer.bytes} url={viewer.url} title={viewer.asset.title}/></> : <p>Gebruik die uitvoerknoppie by My aflaaie om hierdie lêer te stoor en oop te maak.</p>}</>}</dialog>
+    <dialog ref={dialogRef} className="viewer" onClose={() => setViewer(undefined)} onCancel={() => setViewer(undefined)}>{viewer && <><div className="viewer-header"><h2>{viewer.asset.title}</h2><Button variant="ghost" size="icon" aria-label="Sluit lêer" onClick={() => dialogRef.current?.close()}><X/></Button></div>{viewer.asset.kind === 'video' ? <PracticeMedia url={viewer.url} kind="video"/> : viewer.asset.kind === 'audio' ? <><PracticeMedia url={viewer.url} kind="audio" preview={viewer.audio}/>{viewer.audio?.midi && <MidiScore notation={viewer.audio.midi}/>}</> : viewer.asset.kind === 'image' ? <img src={viewer.url} alt={viewer.asset.title} style={{maxWidth:'100%'}}/> : viewer.text !== undefined ? <pre>{viewer.text}</pre> : viewer.asset.mime === 'application/pdf' ? <><SheetMusic data={viewer.bytes} url={viewer.url} title={viewer.asset.title}/></> : <p>Gebruik die uitvoerknoppie by My aflaaie om hierdie lêer te stoor en oop te maak.</p>}</>}</dialog>
   </div>;
 }

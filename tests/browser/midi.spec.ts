@@ -1,0 +1,22 @@
+import { test, expect } from '@playwright/test';
+import { readFile } from 'node:fs/promises';
+import { createHash } from 'node:crypto';
+test('MIDI download renders notation and plays Rust audio after an offline reload',async({page})=>{
+  const bytes=await readFile('content/files/aanstap-rooies/melody.mid');
+  const hash=createHash('sha256').update(bytes).digest('hex');
+  const asset={id:'practice-midi',title:'MIDI oefenmelodie',kind:'audio',mime:'audio/midi',bytes:bytes.length,sha256:hash,path:`content/${hash}`,version:'1.0.0'};
+  const catalog={schemaVersion:1,version:'1.0.0',entries:[{id:'aanstap-rooies',title:'Aanstap Rooies',number:1,category:'dance',description:'MIDI toets',assets:[asset],links:[{title:'Kyk die dansdemonstrasie',url:'https://youtu.be/-lKfaUs5G3Y'}]}]};
+  await page.route('https://niclan1.github.io/automatic-waffle/**',route=>route.request().url().endsWith('catalog.json')?route.fulfill({json:catalog}):route.request().url().endsWith('app.json')?route.fulfill({json:{version:'0.2.0',url:'https://github.com/Niclan1/automatic-waffle/releases/latest'}}):route.fulfill({body:bytes}));
+  await page.goto('/');await page.getByRole('button',{name:'Ontdek die liedjies'}).click();await page.getByRole('button',{name:/Aanstap Rooies/}).click();
+  await expect(page.getByRole('button',{name:/Kyk die dansdemonstrasie/})).toBeVisible();
+  await page.getByRole('button',{name:'Laai af',exact:true}).click();
+  await expect(page.locator('.midi-notation svg').first()).toBeVisible();
+  await expect(page.getByRole('img',{name:'Spelende MIDI klavierrol'})).toBeVisible();
+  await expect.poll(()=>page.locator('audio').evaluate((a:HTMLAudioElement)=>a.duration)).toBeGreaterThan(15);
+  await page.getByLabel('Liedjie spoed').selectOption('0.5');
+  await expect.poll(()=>page.locator('audio').evaluate((a:HTMLAudioElement)=>a.playbackRate)).toBe(0.5);
+  await page.unroute('https://niclan1.github.io/automatic-waffle/**');await page.route('https://niclan1.github.io/automatic-waffle/**',route=>route.abort());
+  await page.reload();await page.getByRole('button',{name:/My aflaaie/}).first().click();await page.getByRole('button',{name:'Maak oop',exact:true}).click();
+  await expect(page.locator('dialog .midi-notation svg').first()).toBeVisible();
+  await expect.poll(()=>page.locator('dialog audio').evaluate((a:HTMLAudioElement)=>a.duration)).toBeGreaterThan(15);
+});

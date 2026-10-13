@@ -9,6 +9,24 @@ concurrency:
   group: release-${{ github.ref }}
   cancel-in-progress: false
 jobs:
+  verify:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup
+      - run: cargo test --locked
+      - run: npm test
+      - run: npm run check:mobile
+      - run: npm run test:mobile
+      - run: npm run pages
+      - run: npx playwright install --with-deps chromium
+      - run: npx playwright test
+      - run: npx playwright test --config playwright.production.config.ts
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: release-test-results
+          path: test-results/
   prepare:
     runs-on: ubuntu-24.04
     outputs:
@@ -146,7 +164,7 @@ jobs:
     with:
       release_tag: ${{ needs.prepare.outputs.tag }}
   publish:
-    needs: [prepare, desktop, android, ios-simulator]
+    needs: [verify, prepare, desktop, android, ios-simulator]
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4

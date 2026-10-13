@@ -50,6 +50,8 @@ app.whenReady().then(async () => {
     await shell.openExternal(safe);
   });
   handler('open_official', async ({ url }) => { const safe=JSON.parse((await core).domain_command(JSON.stringify({op:'external',kind:'official',url})));await shell.openExternal(safe); });
+  handler('open_link', async ({url})=>{const safe=JSON.parse((await core).domain_command(JSON.stringify({op:'external',url})));await shell.openExternal(safe);});
+  handler('open_video', async ({url}) => {const safe=JSON.parse((await core).domain_command(JSON.stringify({op:'external',kind:'video',url})));await shell.openExternal(safe);});
   handler('export_content', async ({ asset }) => {
     const name = JSON.parse((await core).domain_command(JSON.stringify({op:'exportName',asset})));
     const bytes = await verified(asset.sha256);

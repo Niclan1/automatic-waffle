@@ -2,7 +2,7 @@
 import { openDB } from 'idb';
 import init, { browser_command, domain_command, media_command } from '../../crates/catalog-core/pkg/catalog_core';
 import type { Asset, Catalog, Saved, ReleaseInfo, Lesson, CatalogView, Playback, AudioPreview } from './types';
-export const APP_VERSION = '0.1.1';
+export const APP_VERSION = '0.2.0';
 export const API_BASE = import.meta.env.VITE_CONTENT_BASE ?? 'https://niclan1.github.io/automatic-waffle/';
 const ready = init();
 const db = openDB('volkspele',1,{upgrade(db){db.createObjectStore('meta');db.createObjectStore('files',{keyPath:'asset.id'});}});
@@ -41,3 +41,7 @@ export const assetState = (asset:Asset,files:Saved[]) => domain<{record?:Saved;u
 export const exportName = (asset:Asset) => domain<string>({op:"exportName",asset});
 
 export const previewAsset = (asset:Asset,signal:AbortSignal) => call<Blob>({op:"remotePreview",asset},signal);
+
+export async function openVideo(url:string){await ready;url=domain<string>({op:"external",kind:"video",url});if(window.desktop)await invoke("open_video",{url});else window.open(url,"_blank","noopener,noreferrer");}
+
+export async function openLink(url:string){await ready;url=domain<string>({op:"external",url});if(window.desktop)await invoke("open_link",{url});else window.open(url,"_blank","noopener,noreferrer");}
