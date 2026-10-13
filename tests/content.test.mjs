@@ -45,3 +45,11 @@ test('MIDI is published for new clients while the legacy APK catalogue stays com
   assert.equal(current.entries[0].assets[0].mime,'audio/midi');
   assert.equal(legacy.entries[0].assets.length,0);
 });
+
+test('published dances are one lyric-MIDI download and references are typed documents',async()=>{
+ const catalog=JSON.parse(await readFile('content/catalog.source.json','utf8'));
+ for(const entry of catalog.entries){
+  if(entry.category==='dance'){assert.equal(entry.assets.length,1);assert.equal(entry.assets[0].mime,'audio/midi');}
+  else if(entry.category!=='home'){assert.ok(entry.assets.every(a=>a.mime==='text/plain'));}
+ }
+});

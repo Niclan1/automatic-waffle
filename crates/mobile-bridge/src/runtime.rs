@@ -44,6 +44,7 @@ pub fn command(root:&str,request:&str)->Result<String>{
   "files"=>{let _lock=METADATA.lock().map_err(err)?;json!(files(root)?)},
   "download"=>download(root,&request["asset"] )?,
   "remotePreview"=>{let asset=domain::asset(&request["asset"])?;if asset.kind!="image"||asset.bytes>10_000_000{return Err("Invalid welcome image".into());}let output=root.join("previews").join(&asset.sha256);if !output.exists()||catalog_core::hash_reader(fs::File::open(&output).map_err(err)?)?!=asset.sha256{let mut bytes=Vec::new();self::request(&asset.path,20)?.take(asset.bytes+1).read_to_end(&mut bytes).map_err(err)?;domain::verify(&asset,&bytes)?;write(&output,&bytes)?;}json!(uri(&output)?)},
+  "remoteText"=>{let asset=domain::asset(&request["asset"])?;if asset.mime!="text/plain"||asset.bytes>1_000_000{return Err("Invalid document preview".into());}let mut bytes=Vec::new();self::request(&asset.path,20)?.take(asset.bytes+1).read_to_end(&mut bytes).map_err(err)?;domain::verify(&asset,&bytes)?;json!(String::from_utf8(bytes).map_err(err)?)},
   "progress"=>json!(jobs().lock().map_err(err)?.get(id).map(|j|j.progress.load(Ordering::Relaxed)).unwrap_or(0)),
   "cancel"=>{if let Some(job)=jobs().lock().map_err(err)?.get(id){job.cancel.store(true,Ordering::Relaxed);}Value::Null},
   "verify"=>{let record=saved(root,id)?;let source=verified(root,&record)?;if record["asset"]["mime"]=="audio/midi" {let midi=catalog_core::midi::prepare(&fs::read(source).map_err(err)?,record["asset"]["title"].as_str().unwrap_or("MIDI"))?;let output=root.join("previews").join(format!("{}.wav",record["asset"]["sha256"].as_str().ok_or("Missing hash")?));write(&output,&midi.wav)?;json!(uri(&output)?)}else{json!(uri(&source)?)}},
@@ -60,13 +61,13 @@ pub fn command(root:&str,request:&str)->Result<String>{
  use super::*;
  #[test]fn native_midi_plays_prepared_audio_but_exports_original_and_removes_cache(){
   let root=std::env::temp_dir().join(format!("volkspele-midi-test-{}",now()));fs::create_dir_all(root.join("content")).unwrap();
-  let source=catalog_core::midi::Source{title:"Native MIDI".into(),tempo:120,key:0,beats:4,measures:vec![vec![(60,480),(64,480),(67,960)]]};
+  let source=catalog_core::midi::Source{title:"Native MIDI".into(),tempo:120,key:0,beats:4,measures:vec![vec![(60,480),(64,480),(67,960)]],lyrics:vec![catalog_core::midi::Lyric{tick:0,text:"Sing".into()}],song:Some(catalog_core::midi::Song{lyrics:"Sing saam".into(),steps:"Dubbelkring".into(),credits:"Provided source".into(),notes:"Melody".into()})};
   let bytes=catalog_core::midi::encode(&source).unwrap();let hash=catalog_core::hash_bytes(&bytes);
   let asset=json!({"id":"midi","title":"Native MIDI","kind":"audio","mime":"audio/midi","bytes":bytes.len(),"sha256":hash,"path":format!("content/{hash}"),"version":"1.0.0"});
   write(&root.join("content").join(&hash),&bytes).unwrap();write(&root.join("saved.json"),json!([{"asset":asset,"savedAt":"1"}]).to_string().as_bytes()).unwrap();
   let call=|op|serde_json::from_str::<Value>(&command(root.to_str().unwrap(),&json!({"op":op,"id":"midi"}).to_string()).unwrap()).unwrap();
   assert!(call("verify").as_str().unwrap().ends_with(".wav"));let cached=root.join("previews").join(format!("{hash}.wav"));assert!(fs::read(&cached).unwrap().starts_with(b"RIFF"));
-  assert_eq!(call("audioPreview")["midi"]["notes"].as_array().unwrap().len(),3);let exported=call("export");assert_eq!(exported["mime"],"audio/midi");assert!(exported["uri"].as_str().unwrap().ends_with(".mid"));assert_eq!(fs::read(root.join("exports").join(format!("{hash}.mid"))).unwrap(),bytes);
+  assert_eq!(call("audioPreview")["midi"]["notes"].as_array().unwrap().len(),3);assert_eq!(call("audioPreview")["song"]["steps"],"Dubbelkring");assert_eq!(call("audioPreview")["midi"]["lyrics"][0]["text"],"Sing");let exported=call("export");assert_eq!(exported["mime"],"audio/midi");assert!(exported["uri"].as_str().unwrap().ends_with(".mid"));assert_eq!(fs::read(root.join("exports").join(format!("{hash}.mid"))).unwrap(),bytes);
   call("remove");assert!(!cached.exists());fs::remove_dir_all(root).unwrap();
  }
 }
@@ -76,10 +77,11 @@ pub fn command(root:&str,request:&str)->Result<String>{
  #[test]fn native_download_rejects_corrupt_update_and_catalogue_falls_back_offline(){
   let listener=std::net::TcpListener::bind("127.0.0.1:0").unwrap();let address=listener.local_addr().unwrap();
   TEST_ENDPOINT.with(|base|*base.borrow_mut()=Some(format!("http://{address}/")));
-  let server=std::thread::spawn(move||{for (status,body) in [("200 OK","abc"),("200 OK","bad"),("500 Internal Server Error","offline"),("200 OK",r#"{"version":"0.3.0","url":"https://github.com/Niclan1/automatic-waffle/releases/tag/v0.3.0"}"#)]{let(mut socket,_)=listener.accept().unwrap();let mut request=[0u8;2048];socket.read(&mut request).unwrap();write!(socket,"HTTP/1.1 {status}\r\nContent-Length: {}\r\nConnection: close\r\n\r\n{body}",body.len()).unwrap();}});
+  let server=std::thread::spawn(move||{for (status,body) in [("200 OK","abc"),("200 OK","bad"),("200 OK","abc"),("200 OK","bad"),("500 Internal Server Error","offline"),("200 OK",r#"{"version":"0.3.0","url":"https://github.com/Niclan1/automatic-waffle/releases/tag/v0.3.0"}"#)]{let(mut socket,_)=listener.accept().unwrap();let mut request=[0u8;2048];socket.read(&mut request).unwrap();write!(socket,"HTTP/1.1 {status}\r\nContent-Length: {}\r\nConnection: close\r\n\r\n{body}",body.len()).unwrap();}});
   let root=std::env::temp_dir().join(format!("volkspele-network-test-{}",now()));fs::create_dir_all(&root).unwrap();
   let make=|bytes:&[u8]|{let hash=catalog_core::hash_bytes(bytes);json!({"id":"network","title":"Network words","kind":"lyrics","mime":"text/plain","version":"1.0.0","bytes":bytes.len(),"sha256":hash,"path":format!("content/{hash}")})};
   let old=make(b"abc");let new=make(b"new");let call=|value:Value|command(root.to_str().unwrap(),&value.to_string());
+  assert_eq!(call(json!({"op":"remoteText","asset":old})).unwrap(),"\"abc\"");assert!(files(&root).unwrap().is_empty());assert!(call(json!({"op":"remoteText","asset":new})).is_err());
   call(json!({"op":"download","asset":old})).unwrap();assert!(call(json!({"op":"download","asset":new})).is_err());assert_eq!(call(json!({"op":"text","id":"network"})).unwrap(),"\"abc\"");assert_eq!(files(&root).unwrap()[0]["asset"]["sha256"],old["sha256"]);
   write(&root.join("catalog.json"),b"{\"schemaVersion\":1,\"version\":\"1.0.0\",\"entries\":[]}").unwrap();let cached:Value=serde_json::from_str(&call(json!({"op":"catalog"})).unwrap()).unwrap();assert_eq!(cached["offline"],true);
   let update:Value=serde_json::from_str(&call(json!({"op":"release","current":"0.2.0"})).unwrap()).unwrap();assert_eq!(update["version"],"0.3.0");

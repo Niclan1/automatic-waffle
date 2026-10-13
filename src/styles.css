@@ -14,3 +14,9 @@
 .waveform{height:48px;display:flex;gap:2px;align-items:center;margin:12px 0}.waveform span{flex:1;background:#174e43;border-radius:2px}
 
 .midi-score{margin:16px 0;padding:14px;background:#f5f7f1;border-radius:8px}.midi-score p{font-size:12px;line-height:1.6}.midi-notation{overflow-x:auto;background:white;margin:12px 0}.midi-notation svg{max-width:100%}.piano-roll{overflow:auto;background:#e8ede3;margin-top:12px}.piano-roll svg{width:100%;min-width:600px;min-height:120px}.piano-roll rect{fill:#174e43}.midi-score summary{cursor:pointer;padding:12px 0}
+
+.practice > details { margin-top: 12px; } .practice > details > summary { cursor:pointer; font-family:Georgia,serif; font-size:1.25rem; color:#174e43; padding:8px 0; } .sing-along {font-size:1.4rem;color:#174e43;text-align:center;min-height:2rem;}
+
+.info-card summary {cursor:pointer;} .info-card summary h3 {display:inline;} .info-card pre{white-space:pre-wrap;overflow-wrap:anywhere;font-family:inherit;line-height:1.8;margin:18px 0;}
+
+.notation-scroll{overflow-x:auto;max-width:100%}.notation-scroll .midi-notation{min-width:640px}.notation-scroll .midi-notation svg{max-width:none}

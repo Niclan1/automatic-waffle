@@ -45,10 +45,10 @@ test('verified download survives offline launch and failed replacement', async (
 });
 test('mobile navigation, search, pending content and app update link', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
-  await page.route('https://niclan1.github.io/automatic-waffle/**', route => route.fulfill({ json: route.request().url().endsWith('catalog.json') ? catalog(false) : { version: '0.3.0', url: 'https://github.com/Niclan1/automatic-waffle/releases/tag/v0.3.0' } }));
+  await page.route('https://niclan1.github.io/automatic-waffle/**', route => route.fulfill({ json: route.request().url().endsWith('catalog.json') ? catalog(false) : { version: '0.4.0', url: 'https://github.com/Niclan1/automatic-waffle/releases/tag/v0.4.0' } }));
   await page.goto('/');
   await page.getByRole('button', { name: 'Ontdek die liedjies' }).click();
-  await expect(page.getByText('Volkspele 0.3.0 is beskikbaar.')).toBeVisible();
+  await expect(page.getByText('Volkspele 0.4.0 is beskikbaar.')).toBeVisible();
   await page.getByRole('textbox', { name: 'Soek in biblioteek' }).fill('no-match');
   await expect(page.getByText('Geen resultate nie')).toBeVisible();
   await page.getByRole('button', { name: 'Maak soektog skoon' }).click();
@@ -72,8 +72,10 @@ test('sheet music renders offline alongside song playback and practice controls'
   });
   await page.goto('/'); await page.getByRole('button', { name: 'Ontdek die liedjies' }).click(); await page.getByRole('button', { name: /Aanstap Rooies/ }).click();
   await page.locator('.asset-row').filter({ hasText: 'Test musiek' }).getByRole('button', { name: 'Laai af', exact: true }).click();
+  await page.locator('audio').evaluate((a:HTMLAudioElement)=>a.play());
   await expect(page.locator('audio')).toHaveJSProperty('paused', false);
   await page.locator('.asset-row').filter({ hasText: 'Test bladmusiek' }).getByRole('button', { name: 'Laai af', exact: true }).click();
+  await page.locator('.practice > details').filter({has:page.locator('summary').getByText('Bladmusiek',{exact:true})}).locator('summary').first().click();
   await expect(page.getByText('Bladsy 1 / 2')).toBeVisible();
   await expect.poll(() => page.locator('canvas').evaluate(c => (c as HTMLCanvasElement).width)).toBeGreaterThan(0);
   await page.getByRole('button', { name: 'Volgende bladsy' }).click(); await expect(page.getByText('Bladsy 2 / 2')).toBeVisible();
@@ -82,6 +84,7 @@ test('sheet music renders offline alongside song playback and practice controls'
   await page.getByLabel('Vergroot bladmusiek').selectOption('2'); await expect(page.locator('canvas')).toHaveCSS('width', /\d+px/);
   await page.unroute('https://niclan1.github.io/automatic-waffle/**'); await page.route('https://niclan1.github.io/automatic-waffle/**', route => route.abort());
   await page.reload(); await page.getByRole('button', { name: 'Ontdek die liedjies' }).click(); await page.getByRole('button', { name: /Aanstap Rooies/ }).click();
-  await expect(page.getByText('Bladsy 1 / 2')).toBeVisible(); await expect(page.locator('audio')).toHaveJSProperty('paused', false);
+  await page.locator('.practice > details').filter({has:page.locator('summary').getByText('Bladmusiek',{exact:true})}).locator('summary').first().click();
+  await expect(page.getByText('Bladsy 1 / 2')).toBeVisible(); await expect(page.locator('audio')).toHaveJSProperty('paused', true);
   await page.getByRole('button',{name:/My aflaaie/}).first().click(); await page.locator('.asset-row').filter({hasText:'Test bladmusiek'}).getByRole('button',{name:'Maak oop'}).click(); await expect(page.locator('dialog').getByText('Bladsy 1 / 2')).toBeVisible();
 });

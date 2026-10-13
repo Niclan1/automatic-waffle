@@ -55,8 +55,9 @@ pub async fn browser_command(request: &str, host: JsValue, signal: JsValue, prog
         },
         "release"=>js(&domain::release(&text(&endpoint(request["base"].as_str().ok_or_else(||error("Missing base"))?,"api/v1/app.json")?).await?,request["current"].as_str().ok_or_else(||error("Missing version"))?).map_err(error)?),
         "files"=>host_call(&host,"allFiles",&[]).await,
-        "download"|"remotePreview"=>{
+        "download"|"remotePreview"|"remoteText"=>{
             let asset=domain::asset(&request["asset"]).map_err(error)?;
+            if request["op"]=="remoteText" && (asset.mime!="text/plain" || asset.bytes>1_000_000) {return Err(error("Invalid document preview"));}
             let response=response(&endpoint(request["base"].as_str().ok_or_else(||error("Missing base"))?,&asset.path)?,signal.dyn_ref()).await?;
             let reader:web_sys::ReadableStreamDefaultReader=response.body().ok_or_else(||error("No response stream"))?.get_reader().dyn_into()?;
             let mut bytes=Vec::new();
@@ -64,6 +65,7 @@ pub async fn browser_command(request: &str, host: JsValue, signal: JsValue, prog
             if let Err(e)=read{let _=JsFuture::from(reader.cancel()).await;return Err(e);}
             domain::verify(&asset,&bytes).map_err(error)?;
             if signal.dyn_ref::<web_sys::AbortSignal>().is_some_and(|s|s.aborted()){return Err(error("Aflaai gekanselleer"));}
+            if request["op"]=="remoteText" {return js(&json!(String::from_utf8(bytes).map_err(error)?));}
             if request["op"]=="remotePreview" {let parts=Array::new();parts.push(&Uint8Array::from(bytes.as_slice()));let options=web_sys::BlobPropertyBag::new();options.set_type(&asset.mime);return Ok(web_sys::Blob::new_with_u8_array_sequence_and_options(&parts,&options)?.into());}
             let old=host_call(&host,"getFile",&[asset.id.clone().into()]).await?;
             let saved=js(&json!({"asset":serde_json::to_value(&asset).map_err(error)?,"savedAt":js_sys::Date::new_0().to_iso_string().as_string()}))?;

@@ -3,7 +3,7 @@ import * as Sharing from 'expo-sharing';
 import { Linking } from 'react-native';
 import Rust from '../modules/rust-logic';
 import type { Asset, Catalog, ReleaseInfo, Lesson, CatalogView, Playback, AudioPreview } from '../../../src/lib/types';
-export const APP_VERSION = '0.2.0';
+export const APP_VERSION = '0.3.0';
 export type NativeSaved = {asset: Asset; savedAt: string; uri: string};
 const call = async <T,>(request: object): Promise<T> => JSON.parse(await Rust.command(JSON.stringify(request)));
 export const domain = <T,>(request: object): T => JSON.parse(Rust.domain(JSON.stringify(request)));
@@ -29,3 +29,5 @@ export const previewAsset = (asset:Asset) => call<string>({op:"remotePreview",as
 export const openVideo=(url:string)=>Linking.openURL(domain<string>({op:"external",kind:"video",url}));
 
 export const openLink=(url:string)=>Linking.openURL(domain<string>({op:"external",url}));
+
+export const previewText=(asset:Asset)=>call<string>({op:'remoteText',asset});

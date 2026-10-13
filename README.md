@@ -49,14 +49,16 @@ npm run android
 
 For iOS, run `bash scripts/build-ios-rust.sh` on macOS before `npx expo prebuild --platform ios` and `npm run ios` in the mobile app folder. This builds a Rust XCFramework for device and simulator. The generated native projects are ignored; source bindings, config and signing patches are tracked.
 
-Sheet music renders inside the app beside song playback. Audio/video have practice speed and repeat controls, and step instructions/lyrics remain visible during playback.
+Sheet music renders inside the app beside song playback. Audio/video have practice speed and repeat controls, with expandable sections for words, instructions, demonstrations and sources.
 
 The React Native app stores downloaded media in its document directory and uses native audio/video players and the system share sheet. Rust hashes saved files as a stream, so native integrity checks do not load an entire video into JavaScript memory. The website uses IndexedDB; Electron uses app data files with a restricted IPC bridge.
 
 The welcome page follows the photograph-led layout and navigation of https://volkspele.co.za/avvb/. Its photograph is served remotely from the content manifest.
 
-The published library includes the supplied history, clothing notes, lyrics, original sheet photographs, dance introductions and a dated AVVB laer directory. MIDI practice files are concept melody transcriptions that need musical proofreading; they do not reproduce the full piano accompaniment. Missing full dance instructions and later photographs remain pending.
+The published library includes the complete supplied history, clothing text, song lyrics, typed dance introductions and a dated AVVB laer directory. Book photographs and directory screenshots are private transcription references; they are not published downloads. See [reference placement and remaining gaps](docs/CONTENT-AUDIT.md).
 
-Rust parses MIDI, prepares MusicXML notation and piano-roll geometry, and synthesizes piano-like WAV audio. React renders the supplied results; OpenSheetMusicDisplay draws notation on web and desktop. Native mobile shows the original sheet image and piano roll. Saved files reopen offline, including the production website shell. `api/v2/catalog.json` includes MIDI; the legacy v1 catalogue excludes MIDI so older APKs continue to work.
+Each song is a single standard MIDI download. It contains timed MIDI lyric events and embedded typed words, opening instructions and source notes. Rust prepares MusicXML with lyrics, piano-roll geometry and piano-like WAV audio. React displays the prepared results; OpenSheetMusicDisplay renders notation on web, desktop and in a locally bundled native WebView. No notation CDN is required. The separate words section preserves every verse supplied by the family.
+
+Saved songs reopen offline. The MIDI transcriptions omit the full piano accompaniment and require musical proofreading. Blinkvosperd's printed score verse differs from the separately supplied words; its timed lyrics follow the score, while its words section retains all three supplied verses. Full measure-by-measure dance instructions remain pending. `api/v2/catalog.json` includes MIDI; the legacy v1 catalogue excludes MIDI so older APKs continue to work.
 
 See [validation coverage](docs/VALIDATION.md) for regression, native render, browser screenshot and production offline tests.

@@ -22,6 +22,12 @@ pub fn release(text: &str, current: &str) -> Result<Value,String> {
 }
 pub fn command(request: &Value) -> Result<Value,String> {
     match request["op"].as_str().unwrap_or("") {
+        "lyricAt" => {
+            let position=request["position"].as_f64().unwrap_or(0.0);
+            let lyrics=request["lyrics"].as_array().ok_or("Missing lyric timeline")?;
+            let current=lyrics.iter().enumerate().find(|(_,l)|l["start"].as_f64().unwrap_or(0.0)<=position && position<l["end"].as_f64().unwrap_or(0.0));
+            Ok(current.map(|(index,l)|json!({"index":index,"text":l["text"]})).unwrap_or(json!({"index":null,"text":""})))
+        },
         "catalogView" => {
             let catalog = validate_catalog(&request["catalog"].to_string())?;
             let category = request["category"].as_str().unwrap_or("");
@@ -87,6 +93,11 @@ pub fn command(request: &Value) -> Result<Value,String> {
 }
 #[cfg(test)] mod tests {
     use super::*;
+    #[test] fn lyric_boundaries_follow_playback_position(){
+        let lyrics=json!([{"text":"Sing","start":0.0,"end":0.5},{"text":"saam","start":0.5,"end":1.0}]);
+        let at=|position|command(&json!({"op":"lyricAt","lyrics":lyrics,"position":position})).unwrap();
+        assert_eq!(at(0.0)["text"],"Sing");assert_eq!(at(0.5)["text"],"saam");assert_eq!(at(1.0)["text"],"");
+    }
     #[test] fn playback_bounds_and_rate() {assert_eq!(command(&json!({"op":"playback","action":"back","position":4})) .unwrap()["seek"].as_f64(),Some(0.0)); assert!(command(&json!({"op":"playback","action":"speed","value":20})).is_err());}
     #[test] fn newer_apk_release_is_offered(){let result=release(r#"{"version":"0.2.0","url":"https://github.com/Niclan1/automatic-waffle/releases/tag/v0.2.0"}"#, "0.1.1").unwrap();assert_eq!(result["version"],"0.2.0");assert!(video_url("https://youtu.be/-lKfaUs5G3Y"));assert!(!external_url("https://youtu.be.evil.example/-lKfaUs5G3Y"));}
     #[test] fn release_policy() {assert!(release(r#"{"version":"9.0.0","url":"https://evil.example/"}"#,"1.0.0").is_err()); assert!(release(r#"{"version":"1.0.0","url":"https://github.com/Niclan1/automatic-waffle/releases/latest"}"#,"1.0.0").unwrap().is_null());}

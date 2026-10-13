@@ -166,3 +166,5 @@ keystore.properties
 playwright-report/
 test-results/
 *.tsbuildinfo
+
+apps/mobile/src/generated/

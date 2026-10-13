@@ -1,102 +1,46 @@
 {
-  "title": "Aanstap Rooies — oefenmelodie",
+  "title": "Aanstap Rooies",
   "tempo": 100,
   "key": 2,
   "beats": 4,
   "measures": [
     [
       [
+        74,
+        480
+      ],
+      [
+        73,
+        480
+      ],
+      [
+        71,
+        480
+      ],
+      [
+        69,
+        360
+      ],
+      [
+        71,
+        120
+      ]
+    ],
+    [
+      [
+        62,
+        240
+      ],
+      [
+        62,
+        240
+      ],
+      [
+        62,
+        240
+      ],
+      [
         66,
-        480
-      ],
-      [
-        69,
-        480
-      ],
-      [
-        74,
-        480
-      ],
-      [
-        74,
-        360
-      ],
-      [
-        73,
-        120
-      ]
-    ],
-    [
-      [
-        71,
-        240
-      ],
-      [
-        74,
-        240
-      ],
-      [
-        71,
-        240
-      ],
-      [
-        74,
-        240
-      ],
-      [
-        74,
-        720
-      ],
-      [
-        73,
-        240
-      ]
-    ],
-    [
-      [
-        71,
-        240
-      ],
-      [
-        71,
-        240
-      ],
-      [
-        71,
-        240
-      ],
-      [
-        70,
-        240
-      ],
-      [
-        71,
-        480
-      ],
-      [
-        74,
-        360
-      ],
-      [
-        76,
-        120
-      ]
-    ],
-    [
-      [
-        74,
-        240
-      ],
-      [
-        74,
-        240
-      ],
-      [
-        73,
-        240
-      ],
-      [
-        71,
         240
       ],
       [
@@ -104,7 +48,63 @@
         720
       ],
       [
+        64,
+        240
+      ]
+    ],
+    [
+      [
+        64,
+        240
+      ],
+      [
+        64,
+        240
+      ],
+      [
+        64,
+        240
+      ],
+      [
+        63,
+        240
+      ],
+      [
+        64,
+        480
+      ],
+      [
         69,
+        360
+      ],
+      [
+        69,
+        120
+      ]
+    ],
+    [
+      [
+        69,
+        240
+      ],
+      [
+        67,
+        240
+      ],
+      [
+        66,
+        240
+      ],
+      [
+        64,
+        240
+      ],
+      [
+        62,
+        720
+      ],
+      [
+        62,
         240
       ]
     ],
@@ -142,7 +142,7 @@
         240
       ],
       [
-        66,
+        69,
         240
       ]
     ],
@@ -190,11 +190,451 @@
         240
       ],
       [
-        65,
+        66,
+        240
+      ],
+      [
+        67,
+        480
+      ],
+      [
+        69,
+        480
+      ]
+    ],
+    [
+      [
+        69,
+        360
+      ],
+      [
+        67,
+        120
+      ],
+      [
+        66,
+        240
+      ],
+      [
+        64,
+        240
+      ],
+      [
+        62,
+        960
+      ]
+    ],
+    [
+      [
+        74,
+        480
+      ],
+      [
+        73,
+        480
+      ],
+      [
+        71,
+        480
+      ],
+      [
+        69,
+        360
+      ],
+      [
+        71,
+        120
+      ]
+    ],
+    [
+      [
+        62,
+        240
+      ],
+      [
+        62,
+        240
+      ],
+      [
+        62,
+        240
+      ],
+      [
+        66,
         240
       ],
       [
         69,
+        720
+      ],
+      [
+        64,
+        240
+      ]
+    ],
+    [
+      [
+        64,
+        240
+      ],
+      [
+        64,
+        240
+      ],
+      [
+        64,
+        240
+      ],
+      [
+        63,
+        240
+      ],
+      [
+        64,
+        480
+      ],
+      [
+        69,
+        360
+      ],
+      [
+        69,
+        120
+      ]
+    ],
+    [
+      [
+        69,
+        240
+      ],
+      [
+        67,
+        240
+      ],
+      [
+        66,
+        240
+      ],
+      [
+        64,
+        240
+      ],
+      [
+        62,
+        720
+      ],
+      [
+        62,
+        240
+      ]
+    ],
+    [
+      [
+        69,
+        240
+      ],
+      [
+        69,
+        120
+      ],
+      [
+        69,
+        120
+      ],
+      [
+        69,
+        240
+      ],
+      [
+        71,
+        240
+      ],
+      [
+        69,
+        240
+      ],
+      [
+        0,
+        240
+      ],
+      [
+        69,
+        240
+      ],
+      [
+        69,
+        240
+      ]
+    ],
+    [
+      [
+        69,
+        240
+      ],
+      [
+        69,
+        120
+      ],
+      [
+        69,
+        120
+      ],
+      [
+        69,
+        240
+      ],
+      [
+        71,
+        240
+      ],
+      [
+        69,
+        960
+      ]
+    ],
+    [
+      [
+        64,
+        240
+      ],
+      [
+        64,
+        120
+      ],
+      [
+        64,
+        120
+      ],
+      [
+        64,
+        240
+      ],
+      [
+        66,
+        240
+      ],
+      [
+        67,
+        480
+      ],
+      [
+        69,
+        480
+      ]
+    ],
+    [
+      [
+        69,
+        360
+      ],
+      [
+        67,
+        120
+      ],
+      [
+        66,
+        240
+      ],
+      [
+        64,
+        240
+      ],
+      [
+        62,
+        960
+      ]
+    ],
+    [
+      [
+        74,
+        480
+      ],
+      [
+        73,
+        480
+      ],
+      [
+        71,
+        480
+      ],
+      [
+        69,
+        360
+      ],
+      [
+        71,
+        120
+      ]
+    ],
+    [
+      [
+        62,
+        240
+      ],
+      [
+        62,
+        240
+      ],
+      [
+        62,
+        240
+      ],
+      [
+        66,
+        240
+      ],
+      [
+        69,
+        720
+      ],
+      [
+        64,
+        240
+      ]
+    ],
+    [
+      [
+        64,
+        240
+      ],
+      [
+        64,
+        240
+      ],
+      [
+        64,
+        240
+      ],
+      [
+        63,
+        240
+      ],
+      [
+        64,
+        480
+      ],
+      [
+        69,
+        360
+      ],
+      [
+        69,
+        120
+      ]
+    ],
+    [
+      [
+        69,
+        240
+      ],
+      [
+        67,
+        240
+      ],
+      [
+        66,
+        240
+      ],
+      [
+        64,
+        240
+      ],
+      [
+        62,
+        720
+      ],
+      [
+        62,
+        240
+      ]
+    ],
+    [
+      [
+        69,
+        240
+      ],
+      [
+        69,
+        120
+      ],
+      [
+        69,
+        120
+      ],
+      [
+        69,
+        240
+      ],
+      [
+        71,
+        240
+      ],
+      [
+        69,
+        240
+      ],
+      [
+        0,
+        240
+      ],
+      [
+        69,
+        240
+      ],
+      [
+        69,
+        240
+      ]
+    ],
+    [
+      [
+        69,
+        240
+      ],
+      [
+        69,
+        120
+      ],
+      [
+        69,
+        120
+      ],
+      [
+        69,
+        240
+      ],
+      [
+        71,
+        240
+      ],
+      [
+        69,
+        960
+      ]
+    ],
+    [
+      [
+        64,
+        240
+      ],
+      [
+        64,
+        120
+      ],
+      [
+        64,
+        120
+      ],
+      [
+        64,
+        240
+      ],
+      [
+        66,
+        240
+      ],
+      [
+        67,
         480
       ],
       [
@@ -225,5 +665,588 @@
       ]
     ]
   ],
-  "transcription": "Melodielyn uit die verskafde foto; konsep vir musikale proeflees. Geen klavierbegeleiding of herhaling van alle verse nie."
+  "lyrics": [
+    {
+      "tick": 0,
+      "text": "Aan"
+    },
+    {
+      "tick": 480,
+      "text": "stap"
+    },
+    {
+      "tick": 960,
+      "text": "rooi"
+    },
+    {
+      "tick": 1440,
+      "text": "es"
+    },
+    {
+      "tick": 1800,
+      "text": "die"
+    },
+    {
+      "tick": 1920,
+      "text": "pad"
+    },
+    {
+      "tick": 2160,
+      "text": "is"
+    },
+    {
+      "tick": 2400,
+      "text": "lank"
+    },
+    {
+      "tick": 2640,
+      "text": "en"
+    },
+    {
+      "tick": 2880,
+      "text": "swaar,"
+    },
+    {
+      "tick": 3600,
+      "text": "die"
+    },
+    {
+      "tick": 3840,
+      "text": "men"
+    },
+    {
+      "tick": 4080,
+      "text": "se"
+    },
+    {
+      "tick": 4320,
+      "text": "wag"
+    },
+    {
+      "tick": 4560,
+      "text": "al"
+    },
+    {
+      "tick": 4800,
+      "text": "daar"
+    },
+    {
+      "tick": 5280,
+      "text": "en"
+    },
+    {
+      "tick": 5640,
+      "text": "die"
+    },
+    {
+      "tick": 5760,
+      "text": "kof"
+    },
+    {
+      "tick": 6000,
+      "text": "fie"
+    },
+    {
+      "tick": 6240,
+      "text": "is"
+    },
+    {
+      "tick": 6480,
+      "text": "al"
+    },
+    {
+      "tick": 6720,
+      "text": "klaar,"
+    },
+    {
+      "tick": 7440,
+      "text": "O,"
+    },
+    {
+      "tick": 7680,
+      "text": "laat"
+    },
+    {
+      "tick": 7920,
+      "text": "jul"
+    },
+    {
+      "tick": 8040,
+      "text": "lie"
+    },
+    {
+      "tick": 8160,
+      "text": "kwas"
+    },
+    {
+      "tick": 8400,
+      "text": "sies"
+    },
+    {
+      "tick": 8640,
+      "text": "swaai,"
+    },
+    {
+      "tick": 9120,
+      "text": "swaai."
+    },
+    {
+      "tick": 9360,
+      "text": "O,"
+    },
+    {
+      "tick": 9600,
+      "text": "laat"
+    },
+    {
+      "tick": 9840,
+      "text": "jul"
+    },
+    {
+      "tick": 9960,
+      "text": "le"
+    },
+    {
+      "tick": 10080,
+      "text": "kwas"
+    },
+    {
+      "tick": 10320,
+      "text": "sies"
+    },
+    {
+      "tick": 10560,
+      "text": "swaai."
+    },
+    {
+      "tick": 11520,
+      "text": "Wieg"
+    },
+    {
+      "tick": 11760,
+      "text": "jul"
+    },
+    {
+      "tick": 11880,
+      "text": "le"
+    },
+    {
+      "tick": 12000,
+      "text": "kop"
+    },
+    {
+      "tick": 12240,
+      "text": "pe"
+    },
+    {
+      "tick": 12480,
+      "text": "fraai"
+    },
+    {
+      "tick": 12960,
+      "text": "en"
+    },
+    {
+      "tick": 13440,
+      "text": "laat"
+    },
+    {
+      "tick": 13800,
+      "text": "die"
+    },
+    {
+      "tick": 13920,
+      "text": "wie"
+    },
+    {
+      "tick": 14160,
+      "text": "le"
+    },
+    {
+      "tick": 14400,
+      "text": "draai."
+    },
+    {
+      "tick": 15360,
+      "text": "Op"
+    },
+    {
+      "tick": 15840,
+      "text": "tel"
+    },
+    {
+      "tick": 16320,
+      "text": "rooi"
+    },
+    {
+      "tick": 16800,
+      "text": "es,"
+    },
+    {
+      "tick": 17280,
+      "text": "voor"
+    },
+    {
+      "tick": 17520,
+      "text": "slag"
+    },
+    {
+      "tick": 17760,
+      "text": "en"
+    },
+    {
+      "tick": 18000,
+      "text": "sam"
+    },
+    {
+      "tick": 18240,
+      "text": "bok,"
+    },
+    {
+      "tick": 19200,
+      "text": "Is"
+    },
+    {
+      "tick": 19440,
+      "text": "nie"
+    },
+    {
+      "tick": 19680,
+      "text": "no"
+    },
+    {
+      "tick": 19920,
+      "text": "dig"
+    },
+    {
+      "tick": 20160,
+      "text": "nie"
+    },
+    {
+      "tick": 20640,
+      "text": "of"
+    },
+    {
+      "tick": 21000,
+      "text": "is"
+    },
+    {
+      "tick": 21120,
+      "text": "dit"
+    },
+    {
+      "tick": 21360,
+      "text": "nou"
+    },
+    {
+      "tick": 21600,
+      "text": "'n"
+    },
+    {
+      "tick": 21840,
+      "text": "jok?"
+    },
+    {
+      "tick": 22800,
+      "text": "O,"
+    },
+    {
+      "tick": 23040,
+      "text": "laat"
+    },
+    {
+      "tick": 23280,
+      "text": "jul"
+    },
+    {
+      "tick": 23400,
+      "text": "lie"
+    },
+    {
+      "tick": 23520,
+      "text": "kwas"
+    },
+    {
+      "tick": 23760,
+      "text": "sies"
+    },
+    {
+      "tick": 24000,
+      "text": "swaai,"
+    },
+    {
+      "tick": 24480,
+      "text": "swaai."
+    },
+    {
+      "tick": 24720,
+      "text": "O,"
+    },
+    {
+      "tick": 24960,
+      "text": "laat"
+    },
+    {
+      "tick": 25200,
+      "text": "jul"
+    },
+    {
+      "tick": 25320,
+      "text": "le"
+    },
+    {
+      "tick": 25440,
+      "text": "kwas"
+    },
+    {
+      "tick": 25680,
+      "text": "sies"
+    },
+    {
+      "tick": 25920,
+      "text": "swaai."
+    },
+    {
+      "tick": 26880,
+      "text": "Wieg"
+    },
+    {
+      "tick": 27120,
+      "text": "jul"
+    },
+    {
+      "tick": 27240,
+      "text": "le"
+    },
+    {
+      "tick": 27360,
+      "text": "kop"
+    },
+    {
+      "tick": 27600,
+      "text": "pe"
+    },
+    {
+      "tick": 27840,
+      "text": "fraai"
+    },
+    {
+      "tick": 28320,
+      "text": "en"
+    },
+    {
+      "tick": 28800,
+      "text": "laat"
+    },
+    {
+      "tick": 29160,
+      "text": "die"
+    },
+    {
+      "tick": 29280,
+      "text": "wie"
+    },
+    {
+      "tick": 29520,
+      "text": "le"
+    },
+    {
+      "tick": 29760,
+      "text": "draai."
+    },
+    {
+      "tick": 30720,
+      "text": "Pak"
+    },
+    {
+      "tick": 31200,
+      "text": "hom,"
+    },
+    {
+      "tick": 31680,
+      "text": "twaalf"
+    },
+    {
+      "tick": 32160,
+      "text": "tal,"
+    },
+    {
+      "tick": 32640,
+      "text": "wys"
+    },
+    {
+      "tick": 32880,
+      "text": "wat"
+    },
+    {
+      "tick": 33120,
+      "text": "jul"
+    },
+    {
+      "tick": 33360,
+      "text": "kan"
+    },
+    {
+      "tick": 33600,
+      "text": "doen:"
+    },
+    {
+      "tick": 34560,
+      "text": "net"
+    },
+    {
+      "tick": 34800,
+      "text": "nou"
+    },
+    {
+      "tick": 35040,
+      "text": "span"
+    },
+    {
+      "tick": 35280,
+      "text": "ons"
+    },
+    {
+      "tick": 35520,
+      "text": "uit"
+    },
+    {
+      "tick": 36000,
+      "text": "in"
+    },
+    {
+      "tick": 36360,
+      "text": "wei"
+    },
+    {
+      "tick": 36480,
+      "text": "veld"
+    },
+    {
+      "tick": 36720,
+      "text": "lek"
+    },
+    {
+      "tick": 36960,
+      "text": "ker"
+    },
+    {
+      "tick": 37200,
+      "text": "groen."
+    },
+    {
+      "tick": 38160,
+      "text": "O,"
+    },
+    {
+      "tick": 38400,
+      "text": "laat"
+    },
+    {
+      "tick": 38640,
+      "text": "jul"
+    },
+    {
+      "tick": 38760,
+      "text": "lie"
+    },
+    {
+      "tick": 38880,
+      "text": "kwas"
+    },
+    {
+      "tick": 39120,
+      "text": "sies"
+    },
+    {
+      "tick": 39360,
+      "text": "swaai,"
+    },
+    {
+      "tick": 39840,
+      "text": "swaai."
+    },
+    {
+      "tick": 40080,
+      "text": "O,"
+    },
+    {
+      "tick": 40320,
+      "text": "laat"
+    },
+    {
+      "tick": 40560,
+      "text": "jul"
+    },
+    {
+      "tick": 40680,
+      "text": "le"
+    },
+    {
+      "tick": 40800,
+      "text": "kwas"
+    },
+    {
+      "tick": 41040,
+      "text": "sies"
+    },
+    {
+      "tick": 41280,
+      "text": "swaai."
+    },
+    {
+      "tick": 42240,
+      "text": "Wieg"
+    },
+    {
+      "tick": 42480,
+      "text": "jul"
+    },
+    {
+      "tick": 42600,
+      "text": "le"
+    },
+    {
+      "tick": 42720,
+      "text": "kop"
+    },
+    {
+      "tick": 42960,
+      "text": "pe"
+    },
+    {
+      "tick": 43200,
+      "text": "fraai"
+    },
+    {
+      "tick": 43680,
+      "text": "en"
+    },
+    {
+      "tick": 44160,
+      "text": "laat"
+    },
+    {
+      "tick": 44520,
+      "text": "die"
+    },
+    {
+      "tick": 44640,
+      "text": "wie"
+    },
+    {
+      "tick": 44880,
+      "text": "le"
+    },
+    {
+      "tick": 45120,
+      "text": "draai."
+    }
+  ],
+  "song": {
+    "lyrics": "1. Aanstap Rooies\n\nAanstap rooies die pad is lank en swaar,\ndie mense wag al daar en die koffie is al klaar,\nO, laat jullie kwassies swaai, swaai.\nO laat julle kwassies swaai.\nWieg julle koppe fraai en laat die wiele draai.\n\nOptel rooies, voorslag en sambok,\nIs nie nodig nie of is dit nou 'n jok?\nO, laat jullie kwassies swaai, swaai.\nO laat julle kwassies swaai.\nWieg julle koppe fraai en laat die wiele draai.\n\nPak hom, twaalftal, wys wat jul kan doen:\nnetnou span ons uit in weiveld lekker groen.\nO, laat jullie kwassies swaai, swaai.\nO laat julle kwassies swaai.\nWieg julle koppe fraai en laat die wiele draai.",
+    "steps": "Aanstap Rooies\n\nOpstelling: Dubbelkring.\nPassies: Vier stappassies vir een musiekmaat.\nTiekiedraai: Bakkiesgreep.\nSpel — aanvangsbuiging: Los voor mekaar.\n\nDie volledige beskrywing per musiekmaat verskyn nie in die verskafde foto nie. Kyk die dansdemonstrasie. Verdere musiekmaat-instruksies moet nog verskaf word.\n",
+    "credits": "B.A. de Wet; verwerkingskrediet: P.J. Lemmer. Geborg: Transvaal Streek vir Volksang en Volkspele.\nBron: verskafde partituur en projekinhoud.",
+    "notes": "Sangmelodielyn met MIDI lyric-gebeurtenisse. Klavierbegeleiding en instrumentale inleiding is nie ingesluit nie. Met die hand uit die verskafde partituur getik; musikale proeflees bly nodig."
+  }
 }

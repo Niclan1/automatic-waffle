@@ -1,16 +1,16 @@
 # Validation
 
-Locally verified on 13 October 2026: 20 Rust tests, four content tests, four native render tests, 12 browser tests on Linux and Windows, and one production offline test on both platforms. TypeScript, WASM and production builds pass. Electron real MIDI playback/notation and PDF/audio/native file IPC also pass. The signed universal Android APK/AAB build passes; CI rebuilds all release targets.
+Locally verified on 13 October 2026: 22 Rust tests, five content tests, five native render tests, 13 browser tests on Linux and Windows, and one production offline test on both platforms. TypeScript, WASM and production builds pass. Electron real MIDI playback/notation and PDF/audio/native file IPC also pass. The signed universal Android APK/AAB build passes; CI rebuilds all release targets.
 
-The regression suite exercises behavior through Rust, native React Native rendering, browser integration, visual comparisons and a production offline reload. Browser tests use the real published MIDI, sheet images and reference documents where available. Generated PDF/WAV fixtures exercise pagination and playback without inventing published library content.
+The regression suite exercises behavior through Rust, native React Native rendering, browser integration, visual comparisons and a production offline reload. Browser tests use the real published MIDI, typed metadata and reference documents where available. Generated PDF/WAV fixtures exercise pagination and playback without inventing published library content.
 
 | Area | Regression coverage |
 | --- | --- |
 | Library | SHA-256 integrity, cancellation/retry, corrupt replacement retains old content, removal and offline reopening |
 | Updates | Newer release banner, approved installer link, native check starts while catalogue waits, legacy catalogue excludes MIDI |
-| MIDI | Reproducible transcriptions, tempo changes within notes, chord playback/roll, malformed and oversized input rejection, non-silent synthesized WAV |
-| Practice | Original score and lyrics, MusicXML SVG rendering, piano roll, playback rate/seek/repeat and offline playback |
-| Sheet viewing | Browser and native PDF pagination, zoom, image accessibility |
+| MIDI | Reproducible transcriptions, tempo changes within notes, chord playback/roll, malformed and oversized input rejection, non-silent synthesized WAV, timed lyric boundaries and embedded song metadata |
+| Practice | Single song download, all supplied verses, timed lyrics, accordion sections, MusicXML SVG rendering, piano roll, playback rate/seek/repeat and offline playback |
+| Sheet viewing | Browser and native PDF pagination, zoom, offline native notation with lyrics |
 | References | History/clothing/directory render and reopen offline; UTF-8 text preserved |
 | Visuals | Screenshot baselines for welcome and complete practice at 390px and 1280px, plus horizontal overflow checks |
 | Production offline | Service worker caches compiled shell/WASM/notation renderer, excludes API/media, saved MIDI reopens after network-disabled reload |

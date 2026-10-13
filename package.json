@@ -1,7 +1,7 @@
 {
   "name": "volkspele",
   "private": true,
-  "version": "0.2.0",
+  "version": "0.3.0",
   "type": "module",
   "main": "electron/main.cjs",
   "workspaces": [
@@ -22,7 +22,8 @@
     "check:mobile": "npm run check --workspace apps/mobile",
     "test:mobile": "jest --runInBand",
     "test:browser": "playwright test",
-    "test:offline": "playwright test --config playwright.production.config.ts"
+    "test:offline": "playwright test --config playwright.production.config.ts",
+    "postinstall": "node scripts/build-notation.mjs"
   },
   "dependencies": {
     "@radix-ui/react-slot": "^1.2.0",

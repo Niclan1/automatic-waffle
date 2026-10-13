@@ -1,5 +1,5 @@
 {
-  "title": "Die Blink Vosperd — oefenmelodie",
+  "title": "Die Blink Vosperd",
   "tempo": 76,
   "key": -1,
   "beats": 4,
@@ -64,21 +64,21 @@
         480
       ],
       [
-        67,
+        65,
         480
       ],
       [
-        67,
+        64,
         480
       ],
       [
-        69,
+        65,
         480
       ]
     ],
     [
       [
-        67,
+        65,
         960
       ],
       [
@@ -391,5 +391,332 @@
       ]
     ]
   ],
-  "transcription": "Melodielyn uit die verskafde foto; konsep vir musikale proeflees. Geen klavierbegeleiding of herhaling van alle verse nie."
+  "lyrics": [
+    {
+      "tick": 1440,
+      "text": "O,"
+    },
+    {
+      "tick": 1920,
+      "text": "ek"
+    },
+    {
+      "tick": 2400,
+      "text": "het"
+    },
+    {
+      "tick": 2640,
+      "text": "'n"
+    },
+    {
+      "tick": 2880,
+      "text": "perd,"
+    },
+    {
+      "tick": 3360,
+      "text": "'n"
+    },
+    {
+      "tick": 3840,
+      "text": "blink"
+    },
+    {
+      "tick": 4320,
+      "text": "vos"
+    },
+    {
+      "tick": 4800,
+      "text": "perd"
+    },
+    {
+      "tick": 5280,
+      "text": "met"
+    },
+    {
+      "tick": 5520,
+      "text": "'n"
+    },
+    {
+      "tick": 5760,
+      "text": "splin"
+    },
+    {
+      "tick": 6240,
+      "text": "ter"
+    },
+    {
+      "tick": 6720,
+      "text": "nu"
+    },
+    {
+      "tick": 7200,
+      "text": "we"
+    },
+    {
+      "tick": 7680,
+      "text": "saal"
+    },
+    {
+      "tick": 9120,
+      "text": "en"
+    },
+    {
+      "tick": 9360,
+      "text": "ek"
+    },
+    {
+      "tick": 9600,
+      "text": "klim"
+    },
+    {
+      "tick": 10080,
+      "text": "op"
+    },
+    {
+      "tick": 10320,
+      "text": "my"
+    },
+    {
+      "tick": 10560,
+      "text": "perd,"
+    },
+    {
+      "tick": 11040,
+      "text": "my"
+    },
+    {
+      "tick": 11520,
+      "text": "blink"
+    },
+    {
+      "tick": 12000,
+      "text": "vos"
+    },
+    {
+      "tick": 12480,
+      "text": "perd,"
+    },
+    {
+      "tick": 12960,
+      "text": "en"
+    },
+    {
+      "tick": 13200,
+      "text": "ek"
+    },
+    {
+      "tick": 13440,
+      "text": "kom"
+    },
+    {
+      "tick": 13920,
+      "text": "om"
+    },
+    {
+      "tick": 14400,
+      "text": "jou"
+    },
+    {
+      "tick": 14880,
+      "text": "te"
+    },
+    {
+      "tick": 15360,
+      "text": "haal,"
+    },
+    {
+      "tick": 16800,
+      "text": "want"
+    },
+    {
+      "tick": 17280,
+      "text": "jy't"
+    },
+    {
+      "tick": 17760,
+      "text": "ge"
+    },
+    {
+      "tick": 18240,
+      "text": "sê"
+    },
+    {
+      "tick": 18720,
+      "text": "as"
+    },
+    {
+      "tick": 18960,
+      "text": "ek"
+    },
+    {
+      "tick": 19200,
+      "text": "jou"
+    },
+    {
+      "tick": 19680,
+      "text": "wil"
+    },
+    {
+      "tick": 20160,
+      "text": "hê"
+    },
+    {
+      "tick": 20640,
+      "text": "dan"
+    },
+    {
+      "tick": 21120,
+      "text": "moet"
+    },
+    {
+      "tick": 21600,
+      "text": "ek"
+    },
+    {
+      "tick": 22080,
+      "text": "jou"
+    },
+    {
+      "tick": 22560,
+      "text": "kom"
+    },
+    {
+      "tick": 23040,
+      "text": "haal."
+    },
+    {
+      "tick": 24480,
+      "text": "Op"
+    },
+    {
+      "tick": 24720,
+      "text": "'n"
+    },
+    {
+      "tick": 24960,
+      "text": "mooi"
+    },
+    {
+      "tick": 25440,
+      "text": "ry"
+    },
+    {
+      "tick": 25920,
+      "text": "perd,"
+    },
+    {
+      "tick": 26400,
+      "text": "'n"
+    },
+    {
+      "tick": 26880,
+      "text": "blink"
+    },
+    {
+      "tick": 27360,
+      "text": "vos"
+    },
+    {
+      "tick": 27840,
+      "text": "perd,"
+    },
+    {
+      "tick": 28320,
+      "text": "met"
+    },
+    {
+      "tick": 28560,
+      "text": "'n"
+    },
+    {
+      "tick": 28800,
+      "text": "splin"
+    },
+    {
+      "tick": 29280,
+      "text": "ter"
+    },
+    {
+      "tick": 29760,
+      "text": "nu"
+    },
+    {
+      "tick": 30240,
+      "text": "we"
+    },
+    {
+      "tick": 30720,
+      "text": "saal."
+    },
+    {
+      "tick": 32160,
+      "text": "Op"
+    },
+    {
+      "tick": 32400,
+      "text": "'n"
+    },
+    {
+      "tick": 32640,
+      "text": "mooi"
+    },
+    {
+      "tick": 33120,
+      "text": "ry"
+    },
+    {
+      "tick": 33600,
+      "text": "perd,"
+    },
+    {
+      "tick": 34080,
+      "text": "'n"
+    },
+    {
+      "tick": 34560,
+      "text": "blink"
+    },
+    {
+      "tick": 35040,
+      "text": "vos"
+    },
+    {
+      "tick": 35520,
+      "text": "perd,"
+    },
+    {
+      "tick": 36000,
+      "text": "met"
+    },
+    {
+      "tick": 36240,
+      "text": "'n"
+    },
+    {
+      "tick": 36480,
+      "text": "splin"
+    },
+    {
+      "tick": 36960,
+      "text": "ter"
+    },
+    {
+      "tick": 37440,
+      "text": "nu"
+    },
+    {
+      "tick": 37920,
+      "text": "we"
+    },
+    {
+      "tick": 38400,
+      "text": "saal."
+    }
+  ],
+  "song": {
+    "lyrics": "6. Die Blink Vosperd\n\nO, ek het 'n perd, 'n blinkvosperd,\nen ek kom om jou te haal,\nwant jy't gesê as ek jou wil hê dan moet ek jou kom haal.\nOp 'n mooi ryperd, 'n blink vosperd,\nmet 'n splinternuwe saal.\n\nEn nou't ek 'n nooi, 'n mooie nooi\nEn een ding is maar klaar:\nIs die oes eers verby, saal'k op en ry\nMet my blink vosperd na haar.\nOm haar te vra om met my te trou,\nMy vosperd blink mos mooi.\nOp 'n flink galop ry ek na haar,\nSy's my plaas se nuwe nooi;\nOp 'n flink galop ry ek na haar,\nSy's my plaas se nuwe nooi.\n\nEn nou's ons getroud en het 'n span\nVan twaalf groot seuns as kroos;\nEn elkeen wil nou 'n vosperd hê\nOm 'n nooi'ntjie te gaan troos!\nAg, luister tog na goeie raad:\nAs jy 'n vosperd kry,\nRy dan liewer rond op jou eie plaas\nWaar jy nooi'ntjies kan vermy;\nRy dan liewer rond op jou eie plaas\nWaar hy nooi'ntjies kan vermy!",
+    "steps": "Die Blink Vosperd\n\nOpstelling: Dubbelkring.\nPassies:\nTwee stappassies vir een musiekmaat.\nEen skuifpassie vir een musiekmaat.\nEen polkapassie vir een musiekmaat.\nDrie trappassies vir een musiekmaat.\n\nKlap van hande: Klap eie hande op borshoogte en maat se hande op kophoogte.\nSpel — aanvangsbuiging: Los voor mekaar.\n\nDie volledige beskrywing per musiekmaat verskyn nie in die verskafde foto nie. Kyk die dansdemonstrasie. Verdere musiekmaat-instruksies moet nog verskaf word.\n",
+    "credits": "M. van Niekerk (vers A en musiek); Pierre Malan (verse B, C). Geborg: Gert en Susan van Tonder, Kleinfonteinlaer, Kleinfontein.\nBron: verskafde partituur en projekinhoud.",
+    "notes": "Sangmelodielyn met MIDI lyric-gebeurtenisse. Klavierbegeleiding en instrumentale inleiding is nie ingesluit nie. Met die hand uit die verskafde partituur getik; musikale proeflees bly nodig. Die getikte partituurvers het ander woorde as die verskafde liedjieteks. MIDI lirieke volg die vers sigbaar onder die note; al drie verskafde verse bly volledig by Liedjie woorde."
+  }
 }

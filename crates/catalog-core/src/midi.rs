@@ -21,6 +21,19 @@ pub struct Prepared {
     pub audio: Value,
     pub notation: Value,
 }
+#[derive(Clone, Debug, Deserialize, Serialize)]
+pub struct Lyric {
+    pub tick: u64,
+    pub text: String,
+}
+#[derive(Clone, Debug, Deserialize, Serialize)]
+pub struct Song {
+    pub lyrics: String,
+    pub steps: String,
+    pub credits: String,
+    pub notes: String,
+}
+const SONG_PREFIX: &str = "VOLKSPELE_SONG_V1:";
 fn escape(s: &str) -> String {
     s.replace('&', "&amp;")
         .replace('<', "&lt;")
@@ -117,6 +130,7 @@ fn music_xml(
     denominator: u8,
     key: i8,
     title: &str,
+    lyrics: &[Lyric],
 ) -> Option<String> {
     // Notation reconstruction is intentionally limited to monophonic MIDI. The
     // piano roll remains available for arbitrary overlapping/polyphonic notes.
@@ -152,14 +166,20 @@ fn music_xml(
             if begin > at {
                 xml.push_str(&xml_note(None, begin - at, division, key < 0, false, false));
             }
-            xml.push_str(&xml_note(
+            let mut note = xml_note(
                 Some(n.pitch),
                 finish - begin,
                 division,
                 key < 0,
                 n.tick + n.ticks > stop,
                 n.tick < start,
-            ));
+            );
+            if begin == n.tick {
+                if let Some(lyric) = lyrics.iter().find(|l| l.tick == n.tick) {
+                    note = note.replace("</note>", &format!("<lyric><text>{}</text></lyric></note>", escape(&lyric.text)));
+                }
+            }
+            xml.push_str(&note);
             at = finish;
         }
         if at < stop {
@@ -190,6 +210,8 @@ pub fn prepare(bytes: &[u8], title: &str) -> Result<Prepared, String> {
     let mut denominator = 4;
     let mut key = 0;
     let mut raw = Vec::new();
+    let mut lyrics = Vec::new();
+    let mut song: Option<Song> = None;
     for (track, events) in smf.tracks.iter().enumerate() {
         let mut tick = 0u64;
         let mut open = HashMap::new();
@@ -198,6 +220,15 @@ pub fn prepare(bytes: &[u8], title: &str) -> Result<Prepared, String> {
                 .checked_add(event.delta.as_int() as u64)
                 .ok_or("MIDI tick overflow")?;
             match event.kind {
+                TrackEventKind::Meta(MetaMessage::Lyric(text)) => {
+                    let text = std::str::from_utf8(text).map_err(|_| "Invalid lyric encoding")?;
+                    if text.len() > 512 || lyrics.len() >= 20_000 { return Err("MIDI lyrics are too large".into()); }
+                    lyrics.push(Lyric { tick, text: text.into() });
+                }
+                TrackEventKind::Meta(MetaMessage::Text(text)) if text.starts_with(SONG_PREFIX.as_bytes()) => {
+                    if song.is_some() || text.len() > 100_000 { return Err("Invalid song metadata".into()); }
+                    song = Some(serde_json::from_slice(&text[SONG_PREFIX.len()..]).map_err(|e|e.to_string())?);
+                }
                 TrackEventKind::Meta(MetaMessage::Tempo(value)) => {
                     if value.as_int() == 0 {
                         return Err("Invalid MIDI tempo".into());
@@ -314,10 +345,12 @@ pub fn prepare(bytes: &[u8], title: &str) -> Result<Prepared, String> {
     let low = notes.iter().map(|n| n.pitch).min().unwrap();
     let high = notes.iter().map(|n| n.pitch).max().unwrap();
     let roll:Vec<Value>=notes.iter().map(|n|json!({"x":n.start/duration*1000.0,"y":(high-n.pitch)as f64*12.0,"width":(n.end-n.start)/duration*1000.0,"height":10,"pitch":n.pitch,"start":n.start,"end":n.end})).collect();
-    let notation = json!({"musicXml":music_xml(&notes,division,beats,denominator,key,title),"notes":notes,"roll":roll,"rollHeight":(high-low+1)as u32*12,"duration":duration});
+    lyrics.sort_by_key(|l|l.tick);
+    let timed_lyrics: Vec<_> = lyrics.iter().enumerate().map(|(i,l)|json!({"text":l.text,"start":seconds(l.tick,&tempos,division),"end":lyrics.get(i+1).map(|next|seconds(next.tick,&tempos,division)).unwrap_or(duration)})).collect();
+    let notation = json!({"musicXml":music_xml(&notes,division,beats,denominator,key,title,&lyrics),"notes":notes,"roll":roll,"rollHeight":(high-low+1)as u32*12,"duration":duration,"lyrics":timed_lyrics});
     Ok(Prepared {
         wav,
-        audio: json!({"duration":duration,"sampleRate":RATE,"channels":1,"waveform":waveform}),
+        audio: json!({"duration":duration,"sampleRate":RATE,"channels":1,"waveform":waveform,"song":song}),
         notation,
     })
 }
@@ -328,6 +361,10 @@ pub struct Source {
     pub key: i8,
     pub beats: u8,
     pub measures: Vec<Vec<(u8, u32)>>,
+    #[serde(default)]
+    pub lyrics: Vec<Lyric>,
+    #[serde(default)]
+    pub song: Option<Song>,
 }
 /// Publishing helper: curated melody transcription -> standard MIDI, then the
 /// same production parser validates timing before anything is published.
@@ -402,6 +439,20 @@ pub fn encode(source: &Source) -> Result<Vec<u8>, String> {
         delta: u28::new(rest),
         kind: TrackEventKind::Meta(MetaMessage::EndOfTrack),
     });
+    // Merge standard MIDI lyric events with note events using absolute ticks.
+    // Typed reference material travels inside this one downloadable MIDI file.
+    let metadata = source.song.as_ref().map(|song| format!("{SONG_PREFIX}{}", serde_json::to_string(song).unwrap()));
+    let mut tick = 0u64;
+    let mut absolute: Vec<_> = events.into_iter().map(|e| {tick += e.delta.as_int() as u64;(tick,e.kind)}).collect();
+    let end = tick;
+    for lyric in &source.lyrics {
+        if lyric.tick >= end || lyric.text.len() > 512 { return Err("Invalid source lyric timing".into()); }
+        absolute.push((lyric.tick,TrackEventKind::Meta(MetaMessage::Lyric(lyric.text.as_bytes()))));
+    }
+    if let Some(text) = &metadata { absolute.push((0,TrackEventKind::Meta(MetaMessage::Text(text.as_bytes())))); }
+    absolute.sort_by_key(|e|e.0);
+    let mut previous = 0;
+    let events = absolute.into_iter().map(|(at,kind)| {let delta = at-previous; previous=at; TrackEvent {delta:u28::new(delta as u32),kind}}).collect();
     let smf = Smf {
         header: Header {
             format: Format::SingleTrack,
@@ -473,6 +524,7 @@ mod tests {
             key: 2,
             beats: 4,
             measures: vec![vec![(60, 480), (62, 240), (64, 240), (65, 960)]],
+            lyrics: vec![], song: None,
         };
         let bytes = encode(&source).unwrap();
         let prepared = prepare(&bytes, &source.title).unwrap();
@@ -493,8 +545,23 @@ mod tests {
             key: 0,
             beats: 4,
             measures: vec![vec![(60, 120)]]
+            ,lyrics: vec![], song: None
         })
         .is_err());
+    }
+    #[test]
+    fn lyric_midi_is_one_package_with_typed_content_and_notation() {
+        let source = Source { title: "Song".into(), tempo:120,key:0,beats:4,
+            measures:vec![vec![(60,480),(62,1440)]],
+            lyrics:vec![Lyric{tick:0,text:"Sing & lees".into()},Lyric{tick:480,text:"saam".into()}],
+            song:Some(Song{lyrics:"All supplied verses".into(),steps:"Dubbelkring".into(),credits:"Source".into(),notes:"Melody".into()}) };
+        let bytes=encode(&source).unwrap();
+        let prepared=prepare(&bytes,"Song").unwrap();
+        assert_eq!(prepared.audio["song"]["steps"],"Dubbelkring");
+        assert_eq!(prepared.notation["lyrics"][1]["start"],0.5);
+        assert!(prepared.notation["musicXml"].as_str().unwrap().contains("<lyric><text>Sing &amp; lees</text></lyric>"));
+        let smf=Smf::parse(&bytes).unwrap();
+        assert_eq!(smf.tracks[0].iter().filter(|e|matches!(e.kind,TrackEventKind::Meta(MetaMessage::Lyric(_)))).count(),2);
     }
     #[test]
     fn published_transcriptions_are_reproducible() {

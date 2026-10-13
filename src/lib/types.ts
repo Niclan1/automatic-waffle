@@ -6,5 +6,5 @@ export type Saved = { asset: Asset; savedAt: string; blob?: Blob };
 export type Lesson = {audio?:Asset;sheet?:Asset;video?:Asset;instructions:Asset[];records:Saved[];links:{title:string;url:string}[]};
 export type CatalogView = {entries:Entry[];assets:Asset[];outdated:Saved[];totalBytes:number};
 export type Playback = {speed:number;loop:boolean;playing:boolean;seek:number|null;transport:'play'|'pause'|null};
-export type MidiNotation = {musicXml?:string;duration:number;rollHeight:number;roll:{x:number;y:number;width:number;height:number;pitch:number;start:number;end:number}[]};
-export type AudioPreview = {duration:number;sampleRate:number;channels:number;waveform:number[];midi?:MidiNotation};
+export type MidiNotation = {musicXml?:string;duration:number;lyrics:{text:string;start:number;end:number}[];rollHeight:number;roll:{x:number;y:number;width:number;height:number;pitch:number;start:number;end:number}[]};
+export type AudioPreview = {duration:number;sampleRate:number;channels:number;waveform:number[];song?:{lyrics:string;steps:string;credits:string;notes:string};midi?:MidiNotation};
