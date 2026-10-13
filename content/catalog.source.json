@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "version": "0.2.0",
+  "version": "0.2.1",
   "entries": [
     {
       "id": "welkom",
@@ -34,14 +34,6 @@
           "version": "1.0.0"
         },
         {
-          "id": "aanstap-rooies-score",
-          "title": "Aanstap Rooies — oorspronklike partituur",
-          "kind": "sheet",
-          "file": "aanstap-rooies/score.jpg",
-          "mime": "image/jpeg",
-          "version": "1.0.0"
-        },
-        {
           "id": "aanstap-rooies-lyrics",
           "title": "Aanstap Rooies — liedjie woorde",
           "kind": "lyrics",
@@ -55,14 +47,6 @@
           "kind": "steps",
           "file": "aanstap-rooies/steps.txt",
           "mime": "text/plain",
-          "version": "1.0.0"
-        },
-        {
-          "id": "aanstap-rooies-intro",
-          "title": "Aanstap Rooies — handleidingfoto",
-          "kind": "image",
-          "file": "aanstap-rooies/introduction.jpg",
-          "mime": "image/jpeg",
           "version": "1.0.0"
         },
         {
@@ -97,14 +81,6 @@
           "version": "1.0.0"
         },
         {
-          "id": "blinkvosperd-score",
-          "title": "Blinkvosperd — oorspronklike partituur",
-          "kind": "sheet",
-          "file": "blinkvosperd/score.jpg",
-          "mime": "image/jpeg",
-          "version": "1.0.0"
-        },
-        {
           "id": "blinkvosperd-lyrics",
           "title": "Blinkvosperd — liedjie woorde",
           "kind": "lyrics",
@@ -118,14 +94,6 @@
           "kind": "steps",
           "file": "blinkvosperd/steps.txt",
           "mime": "text/plain",
-          "version": "1.0.0"
-        },
-        {
-          "id": "blinkvosperd-intro",
-          "title": "Blinkvosperd — handleidingfoto",
-          "kind": "image",
-          "file": "blinkvosperd/introduction.jpg",
-          "mime": "image/jpeg",
           "version": "1.0.0"
         },
         {
@@ -180,7 +148,7 @@
       "id": "laer",
       "title": "Laer inligting",
       "category": "camp",
-      "description": "Vind jou laer: ’n aflaaibare adreslys en die verskafde verwysingsfoto’s.",
+      "description": "Vind jou laer in die getikte AVVB adreslys.",
       "assets": [
         {
           "id": "camp-directory",
@@ -188,86 +156,6 @@
           "kind": "document",
           "file": "camp/laerlys.txt",
           "mime": "text/plain",
-          "version": "1.0.0"
-        },
-        {
-          "id": "camp-photo-01",
-          "title": "Laer-adreslys — verwysingsfoto 1",
-          "kind": "image",
-          "file": "camp/laerlys-01.jpg",
-          "mime": "image/jpeg",
-          "version": "1.0.0"
-        },
-        {
-          "id": "camp-photo-02",
-          "title": "Laer-adreslys — verwysingsfoto 2",
-          "kind": "image",
-          "file": "camp/laerlys-02.jpg",
-          "mime": "image/jpeg",
-          "version": "1.0.0"
-        },
-        {
-          "id": "camp-photo-03",
-          "title": "Laer-adreslys — verwysingsfoto 3",
-          "kind": "image",
-          "file": "camp/laerlys-03.jpg",
-          "mime": "image/jpeg",
-          "version": "1.0.0"
-        },
-        {
-          "id": "camp-photo-04",
-          "title": "Laer-adreslys — verwysingsfoto 4",
-          "kind": "image",
-          "file": "camp/laerlys-04.jpg",
-          "mime": "image/jpeg",
-          "version": "1.0.0"
-        },
-        {
-          "id": "camp-photo-05",
-          "title": "Laer-adreslys — verwysingsfoto 5",
-          "kind": "image",
-          "file": "camp/laerlys-05.jpg",
-          "mime": "image/jpeg",
-          "version": "1.0.0"
-        },
-        {
-          "id": "camp-photo-06",
-          "title": "Laer-adreslys — verwysingsfoto 6",
-          "kind": "image",
-          "file": "camp/laerlys-06.jpg",
-          "mime": "image/jpeg",
-          "version": "1.0.0"
-        },
-        {
-          "id": "camp-photo-07",
-          "title": "Laer-adreslys — verwysingsfoto 7",
-          "kind": "image",
-          "file": "camp/laerlys-07.jpg",
-          "mime": "image/jpeg",
-          "version": "1.0.0"
-        },
-        {
-          "id": "camp-photo-08",
-          "title": "Laer-adreslys — verwysingsfoto 8",
-          "kind": "image",
-          "file": "camp/laerlys-08.jpg",
-          "mime": "image/jpeg",
-          "version": "1.0.0"
-        },
-        {
-          "id": "camp-photo-09",
-          "title": "Laer-adreslys — verwysingsfoto 9",
-          "kind": "image",
-          "file": "camp/laerlys-09.jpg",
-          "mime": "image/jpeg",
-          "version": "1.0.0"
-        },
-        {
-          "id": "camp-photo-10",
-          "title": "Laer-adreslys — verwysingsfoto 10",
-          "kind": "image",
-          "file": "camp/laerlys-10.jpg",
-          "mime": "image/jpeg",
           "version": "1.0.0"
         }
       ],
